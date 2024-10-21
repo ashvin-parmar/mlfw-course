@@ -121,3 +121,12 @@ if(matrix==NULL) return ;
 if(row<0 || row>=matrix->rows || column<0 || column>=matrix->columns) return;
 matrix->data[row][column]=value;
 }
+void mlfw_mat_double_get_dimension(mlfw_mat_double *matrix,dimension_t *rows,dimension_t *columns)
+{
+*rows=0;
+*columns=0;
+if(matrix==NULL);
+*rows=matrix->rows;
+*columns=matrix->columns; 
+}
+
