@@ -2,13 +2,13 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-struct __mlfw_mat_double
+typedef struct __mlfw_mat_double
 {
 double **data;
 dimension_t rows;
 dimension_t columns; 
 }mlfw_mat_double;
-mlfw_mat_double * mlfw_mat_double_create_new(dimesion_t rows,dimension_t columns)
+mlfw_mat_double * mlfw_mat_double_create_new(dimension_t rows,dimension_t columns)
 {
 mlfw_mat_double *matrix;
 index_t r,c;
@@ -50,8 +50,7 @@ mlfw_mat_double * mlfw_mat_double_from_csv(const char *csv_file_name)
 index_t r,c;
 dimension_t rows,columns;
 mlfw_mat_double *matrix;
-double *value;
-mlfw_mat_double 
+double value;
 int index;
 char m;
 char double_string[1025];
@@ -68,7 +67,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file)) break;
-if(rows==0 && m==',') column++;
+if(rows==0 && m==',') columns++;
 if(m=='\n') rows++;
 }
 columns++;
@@ -85,11 +84,13 @@ index=0;
 while(1)
 {
 m=fgetc(file);
-if(feof(file);
+if(feof(file)) break;
 if(m==',' || m=='\n')
 {
-double_string[r][c]='\0';
+double_string[index]='\0';
 value=strtod(double_string,NULL);
+index=0;
+matrix->data[r][c]=value;
 c++;
 if(matrix->columns==c)
 {
@@ -105,4 +106,18 @@ index++;
 }
 fclose(file);
 return matrix;
+}
+double mlfw_mat_double_get(mlfw_mat_double *matrix,index_t row,index_t column)
+{
+double value=0.0;
+if(matrix==NULL) return value;
+if(row<0 || row>=matrix->rows || column<0 || column>=matrix->columns) return value;
+value=matrix->data[row][column];
+return value;
+}
+void mlfw_mat_double_set(mlfw_mat_double *matrix,index_t row,index_t column,double value)
+{
+if(matrix==NULL) return ;
+if(row<0 || row>=matrix->rows || column<0 || column>=matrix->columns) return;
+matrix->data[row][column]=value;
 }
