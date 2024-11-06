@@ -123,18 +123,61 @@ matrix->data[row][column]=value;
 }
 void mlfw_mat_double_get_dimension(mlfw_mat_double *matrix,dimension_t *rows,dimension_t *columns)
 {
-*rows=0;
-*columns=0;
 if(matrix==NULL);
-*rows=matrix->rows;
-*columns=matrix->columns; 
+if(rows!=NULL) *rows=matrix->rows;
+if(columns!=NULL) *columns=matrix->columns; 
 }
 void mlfw_mat_double_copy(mlfw_mat_double *target,mlfw_mat_double *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index)
 {
+dimension_t target_rows;
+dimension_t target_columns;
+dimension_t source_rows;
+dimension_t source_columns;
+index_t target_r,target_c;
+index_t source_r,source_c;
+if(target==NULL || source==NULL) return;
+mlfw_mat_double_get_dimension(target,&target_rows,&target_columns);
+mlfw_mat_double_get_dimension(source,&source_rows,&source_columns);
+
+if(from_target_row_index<0 || from_target_row_index>=target_rows) return;
+if(from_target_column_index<0 || from_target_column_index>=target_columns) return;
+
+if(from_source_row_index<0 || from_source_row_index>=source_rows) return;
+if(from_source_column_index<0 || from_source_column_index>=source_columns) return;   
+if(to_source_row_index<0 || to_source_row_index>=source_rows) return;
+if(to_source_column_index<0 || to_source_column_index>=source_columns) return;   
+if(from_source_row_index>to_source_row_index) return ;
+if(from_source_column_index>to_source_column_index) return;
+
+for(target_r=from_target_row_index,source_r=from_source_row_index;source_r<to_source_row_index;target_r++,source_r++)
+{
+for(target_c=from_target_column_index,source_c=from_source_column_index;source_c<to_source_column_index;target_c++,source_c++)
+{
+if(target_c>=0 && target_r>=0 && target_r<target_rows && target_c<target_columns)
+{
+mlfw_mat_double_set(target,target_r,target_c,mlfw_mat_double_get(source,target_r,target_c));
+}
+}
+}
 }
 mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matrix,index_t column_index)
 {
-return NULL;
+mlfw_column_vec_double *vector;
+dimension_t matrix_columns;
+dimension_t matrix_rows;
+index_t r,c;
+if(matrix==NULL) return NULL;
+mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
+if(column_index>=matrix_columns || column_index<0) return NULL;
+
+vector=mlfw_column_vec_double_create_new(matrix_rows);
+if(vector==NULL) return NULL;
+c=column_index;
+for(r=0;r<matrix_rows;r++)
+{
+mlfw_column_vec_double_set(vector,r,mlfw_mat_double_get(matrix,r,c));
+}
+return vector;
 }
 void mlfw_mat_double_fill(mlfw_mat_double *matrix,index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value)
 {
