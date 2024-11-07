@@ -149,9 +149,9 @@ if(to_source_column_index<0 || to_source_column_index>=source_columns) return;
 if(from_source_row_index>to_source_row_index) return ;
 if(from_source_column_index>to_source_column_index) return;
 
-for(target_r=from_target_row_index,source_r=from_source_row_index;source_r<to_source_row_index;target_r++,source_r++)
+for(target_r=from_target_row_index,source_r=from_source_row_index;source_r<=to_source_row_index;target_r++,source_r++)
 {
-for(target_c=from_target_column_index,source_c=from_source_column_index;source_c<to_source_column_index;target_c++,source_c++)
+for(target_c=from_target_column_index,source_c=from_source_column_index;source_c<=to_source_column_index;target_c++,source_c++)
 {
 if(target_c>=0 && target_r>=0 && target_r<target_rows && target_c<target_columns)
 {
@@ -181,4 +181,24 @@ return vector;
 }
 void mlfw_mat_double_fill(mlfw_mat_double *matrix,index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value)
 {
+dimension_t matrix_rows;
+dimension_t matrix_columns;
+index_t r,c;
+if(matrix==NULL) return;
+mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
+if(from_row_index<0 || from_row_index>=matrix_rows) return;
+if(from_column_index<0 || from_column_index>=matrix_columns) return;
+if(to_row_index<0 || to_row_index>=matrix_rows) return;
+if(to_column_index<0 || to_column_index>=matrix_columns) return;
+
+if(from_row_index>to_row_index) return;
+if(from_column_index>to_column_index) return; 
+
+for(r=from_row_index;r<=to_row_index;r++)
+{
+for(c=from_column_index;c<=to_column_index;c++)
+{
+mlfw_mat_double_set(matrix,r,c,value);
+}
+}
 }

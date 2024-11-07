@@ -24,7 +24,7 @@ mlfw_column_vec_double *ETE; //Multiplication of E with E(Transpose) : Gives ETE
 double sum_of_squared_error_values; //Value inside ETE which is ordered(1*1) Matrix (Column vector) 
 double final_error_value; //Finally divide sum_of_squared_error with number of matrix 
 
-dataset=mlfw_mat_double_from_csv("IceCreamSales.cssv");
+dataset=mlfw_mat_double_from_csv("IceCreamSales.csv");
 if(dataset==NULL)
 {
 printf("Unable to load dataset fromo IceCreamSales.csv File\n");
@@ -40,7 +40,6 @@ printf("Unable to Train, Low on memory\n");
 mlfw_mat_double_destroy(dataset);
 return ;
 }
-
 /*  COPY
 1 argu: Target Matrix
 2 argu: Source Matrix to copy from
@@ -64,7 +63,6 @@ mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_columns-1,0);
 */
 //void mlfw_mat_double_fill(mlfw_mat_double *matrix,index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value);
 mlfw_mat_double_fill(I,0,1,dataset_rows-1,0,1.0);
-
 /*	CREATE COLUMN VECTOR FROM MATRIX COLUMN
 1 argu: Target matrix of which columns are to be extracted in column vector
 2 argu: Index of columns that need to be extracted
@@ -84,7 +82,7 @@ return ;
 */
 //mlfw_column_vec_double * mlfw_column_vec_double_create_new_filled(dimension_t size,double value);
 m=mlfw_column_vec_double_create_new_filled(I_columns,0.0);
-if(m=NULL)
+if(m==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
@@ -145,6 +143,7 @@ return;
 2 argu: Row vector
 */
 //mlfw_column_vec_double * mlfw_multiply_double_column_vector_with_double_row_vector(mlfw_column_vec_double * column_vector,mlfw_row_vec_double *row_vector);
+
 ETE=mlfw_multiply_double_row_vector_with_column_vector(ET,E);
 if(ETE==NULL)
 {
@@ -160,12 +159,14 @@ return ;
 }
 //double mlfw_column_vec_double_get(mlfw_column_vec_double *vector,index_t index);
 sum_of_squared_error_values=mlfw_column_vec_double_get(ETE,0);
-final_error_value=sum_of_squared_error_values/I_columns;
+final_error_value=sum_of_squared_error_values/I_rows;
+
+printf("sum of squared error Values: %20.15lf\n",sum_of_squared_error_values);
+printf("Final error value: %20.15lf\n",final_error_value);
 
 //Now, Here are logic to update 'Mi' and 'Ci' to minimizes error values of (Yi=MiXi+Ci)
 
 //Releases memory
-printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
 mlfw_column_vec_double_destroy(A);
