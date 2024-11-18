@@ -23,11 +23,13 @@ mlfw_row_vec_double *ET; //Transpose of E Column vector to Row Vector
 mlfw_column_vec_double *ETE; //Multiplication of E with E(Transpose) : Gives ETE
 double sum_of_squared_error_values; //Value inside ETE which is ordered(1*1) Matrix (Column vector) 
 double final_error_value; //Finally divide sum_of_squared_error with number of matrix 
-
-dataset=mlfw_mat_double_from_csv("IceCreamSales.csv");
+char filename[101];
+printf("Enter training dataset name[.csv formate]: ");
+scanf("%s",filename);
+dataset=mlfw_mat_double_from_csv(filename);
 if(dataset==NULL)
 {
-printf("Unable to load dataset fromo IceCreamSales.csv File\n");
+printf("Unable to load dataset fromo %s File\n",filename);
 return ;
 }
 mlfw_mat_double_get_dimension(dataset,&dataset_rows,&dataset_columns);
