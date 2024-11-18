@@ -1,7 +1,7 @@
 #include<mlfw_matrix.h>
 #include<stdlib.h>
 #include<stdio.h>
-
+#include<time.h>
 typedef struct __mlfw_mat_double
 {
 double **data;
@@ -201,4 +201,63 @@ for(c=from_column_index;c<=to_column_index;c++)
 mlfw_mat_double_set(matrix,r,c,value);
 }
 }
+}
+void mlfw_mat_double_to_csv(mlfw_mat_double *matrix,const char * csv_file_name)
+{
+index_t r,c;
+char seperator;
+FILE *file;
+if(matrix==NULL || csv_file_name==NULL) return;
+file=fopen(csv_file_name,"w");
+if(file==NULL) return;
+for(r=0;r<matrix->rows;r++)
+{
+for(c=0;c<matrix->columns;c++)
+{
+fprintf(file,"%lf",matrix->data[r][c]);
+if(c==matrix->columns-1)
+{
+seperator='\n';
+}
+else
+{
+seperator=',';
+}
+fputc(seperator,file);
+}
+}
+fclose(file);
+}
+mlfw_mat_double * mlfw_mat_double_shuffle(mlfw_mat_double *matrix, uint8_t how_many_times_to_shuffle)
+{
+mlfw_mat_double *shuffle_matrix;
+int random;
+index_t a,b;
+index_t c,r,idx,end_at_index;
+uint8_t j;
+double tmp_var;
+if(matrix==NULL) return NULL;
+if(how_many_times_to_shuffle<=0) return NULL;
+shuffle_matrix=mlfw_mat_double_create_new(matrix->rows,matrix->columns);
+if(shuffle_matrix==NULL) return NULL;
+mlfw_mat_double_copy(shuffle_matrix,matrix,0,0,0,0,matrix->rows-1,matrix->columns-1);
+b=shuffle_matrix->rows-1;
+end_at_index=shuffle_matrix->rows-3;
+srand(time(NULL));
+for(j=0;j<how_many_times_to_shuffle;j++)
+{
+for(r=0;r<=end_at_index;r++)
+{
+a=r+1;
+random=rand();
+idx=random%(b-a+1)+a;
+for(c=0;c<shuffle_matrix->columns;++c)
+{
+tmp_var=shuffle_matrix->data[r][c];
+shuffle_matrix->data[r][c]=shuffle_matrix->data[idx][c];
+shuffle_matrix->data[idx][c]=tmp_var;
+}
+}
+}
+return shuffle_matrix;
 }
