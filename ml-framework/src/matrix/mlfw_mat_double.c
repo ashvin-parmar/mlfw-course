@@ -261,3 +261,19 @@ shuffle_matrix->data[idx][c]=tmp_var;
 }
 return shuffle_matrix;
 }
+mlfw_mat_double * mlfw_mat_double_transpose(mlfw_mat_double *matrix)
+{
+mlfw_mat_double * transpose_matrix;
+index_t r,c;
+if(matrix==NULL) return NULL;
+transpose_matrix=mlfw_mat_double_create_new(matrix->columns,matrix->rows);
+if(transpose_matrix==NULL) return NULL;
+for(r=0;r<matrix->rows;r++)
+{
+for(c=0;c<matrix->columns;c++)
+{
+transpose_matrix->data[c][r]=matrix->data[r][c];
+}
+}
+return transpose_matrix;
+}

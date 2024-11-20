@@ -15,4 +15,5 @@ void mlfw_mat_double_copy(mlfw_mat_double *target,mlfw_mat_double *source,index_
 mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matrix,index_t column_index);
 void mlfw_mat_double_fill(mlfw_mat_double *matrix,index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value);
 mlfw_mat_double * mlfw_mat_double_shuffle(mlfw_mat_double *matrix, uint8_t shuffle_times);
+mlfw_mat_double *mlfw_mat_double_transpose(mlfw_mat_double *matrix);
 #endif

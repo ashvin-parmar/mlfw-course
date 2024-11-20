@@ -51,7 +51,7 @@ return ;
 8 argu: Column index to end copy data form source matrix
 */
 //void mlfw_mat_double_copy(mlfw_mat_double *target,mlfw_mat_double *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index);
-mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_columns-1,0);
+mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_rows-1,0);
 
 /* FILL
 1 argu: Matrix to fill data

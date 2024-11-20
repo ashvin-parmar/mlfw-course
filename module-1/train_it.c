@@ -21,6 +21,7 @@ mlfw_column_vec_double *P; // For Predicated Matrix data values (That one column
 mlfw_column_vec_double *E; //Error Values data (Predicate -Actual) [P-A]
 mlfw_row_vec_double *ET; //Transpose of E Column vector to Row Vector
 mlfw_column_vec_double *ETE; //Multiplication of E with E(Transpose) : Gives ETE
+
 double sum_of_squared_error_values; //Value inside ETE which is ordered(1*1) Matrix (Column vector) 
 double final_error_value; //Finally divide sum_of_squared_error with number of matrix 
 char filename[101];
@@ -29,7 +30,7 @@ scanf("%s",filename);
 dataset=mlfw_mat_double_from_csv(filename);
 if(dataset==NULL)
 {
-printf("Unable to load dataset fromo %s File\n",filename);
+printf("Unable to load dataset from %s File\n",filename);
 return ;
 }
 mlfw_mat_double_get_dimension(dataset,&dataset_rows,&dataset_columns);
@@ -53,7 +54,7 @@ return ;
 8 argu: Column index to end copy data form source matrix
 */
 //void mlfw_mat_double_copy(mlfw_mat_double *target,mlfw_mat_double *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index);
-mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_columns-1,0);
+mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_rows-1,dataset_columns-1);
 
 /* FILL
 1 argu: Matrix to fill data
