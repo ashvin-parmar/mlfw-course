@@ -1,10 +1,13 @@
 //Testcase for Train Machine to learn new feature of finding minimum error Values
+//Update m and c value's as per sir code
 
 #include<mlfw_matrix.h>
 #include<mlfw_vector.h>
 #include<mlfw_operations.h>
 #include<stdio.h>
 #include<stdlib.h>
+
+uint64_t NUMBER_OF_ITERATION=100000;
 void train_it()
 {
 mlfw_mat_double *dataset; //For CSV File to Dataset matrix conversion
@@ -22,12 +25,22 @@ mlfw_column_vec_double *E; //Error Values data (Predicate -Actual) [P-A]
 mlfw_row_vec_double *ET; //Transpose of E Column vector to Row Vector
 mlfw_column_vec_double *ETE; //Multiplication of E with E(Transpose) : Gives ETE
 
+mlfw_mat_double *IT;
+
+mlfw_column_vec_double *ITE;
+
+mlfw_column_vec_double *TMP;
+
+mlfw_column_vec_double *um;
+
+uint64_t k;
 double sum_of_squared_error_values; //Value inside ETE which is ordered(1*1) Matrix (Column vector) 
 double final_error_value; //Finally divide sum_of_squared_error with number of matrix 
 char filename[101];
-printf("Enter training dataset name[.csv formate]: ");
-scanf("%s",filename);
-dataset=mlfw_mat_double_from_csv(filename);
+//printf("Enter training dataset name[.csv formate]: ");
+//scanf("%s",filename);
+//dataset=mlfw_mat_double_from_csv(filename);
+dataset=mlfw_mat_double_from_csv("training_dataset.csv");
 if(dataset==NULL)
 {
 printf("Unable to load dataset from %s File\n",filename);
@@ -43,116 +56,88 @@ printf("Unable to Train, Low on memory\n");
 mlfw_mat_double_destroy(dataset);
 return ;
 }
-/*  COPY
-1 argu: Target Matrix
-2 argu: Source Matrix to copy from
-3 argu: Row index to start copy data from target matrix
-4 argu: Columns index to start copy data from target matrix
-5 argu: Row index to start copy data from source matrix
-6 argu: Coulmn index to start copy data from source matrix
-7 argu: Row index to end copy data from source matrix
-8 argu: Column index to end copy data form source matrix
-*/
-//void mlfw_mat_double_copy(mlfw_mat_double *target,mlfw_mat_double *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index);
 mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_rows-1,dataset_columns-1);
 
-/* FILL
-1 argu: Matrix to fill data
-2 argu: Starting row index to fill value
-3 argu: Starting columns index to fill value
-4 argu: Ending row index to fill value
-5 argu: Ending column index to fill value
-6 argu: Value to fill on those places of matrix
-*/
-//void mlfw_mat_double_fill(mlfw_mat_double *matrix,index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value);
-mlfw_mat_double_fill(I,0,1,dataset_rows-1,0,1.0);
-/*	CREATE COLUMN VECTOR FROM MATRIX COLUMN
-1 argu: Target matrix of which columns are to be extracted in column vector
-2 argu: Index of columns that need to be extracted
-*/
-//mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matrix,index_t column_index);
+mlfw_mat_double_fill(I,0,0,dataset_rows-1,0,1.0);
+
+
+IT=mlfw_mat_double_transpose(I);
+if(IT==NULL)
+{
+printf("Low memory\n");
+mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(I);
+return ;
+}
+
+
 A=mlfw_mat_double_create_column_vec(dataset,1);
 if(A==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
 return ;
 }
-/*	CREATE COLUMN VECTOR OF SIZE N for 'Mn' (Y=MX+C)
-1 argu: Size equals to Xn's N elements so I_columns
-2 argu: Set value as '0.0'
-*/
-//mlfw_column_vec_double * mlfw_column_vec_double_create_new_filled(dimension_t size,double value);
 m=mlfw_column_vec_double_create_new_filled(I_columns,0.0);
 if(m==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 return ;
 }
-/* CREATE A COLUMN MATRIX WITH ORDER AS (I_rows*1) Because Multiple of I and m gives us this (PREDICATE PROFIT)
- A=B*C
-1 argu: Matrix A
-2 argu: Matrix B (Maybe column vector)
-*/
-//mlfw_column_vec_double * mlfw_multiply_double_matrix_with_column_vector(mlfw_mat_double *matrix,mlfw_column_vec_double*vector);
+
+k=1;
+while(k<=NUMBER_OF_ITERATION)
+{
+
 P=mlfw_multiply_double_matrix_with_column_vector(I,m);
 if(P==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 return ;
 }
-/*	CREATE A COLUMN VECTOR OF ERROR VALUES (P-A) [Predicate-Actual]
-1 argu: Predicated Values
-2 argu: Actual Values
-*/
-//mlfw_column_vec_double * mlfw_subtract_double_column_vector(mlfw_column_vec_double *first_vector,mlfw_column_vec_double *second_vector);
 E=mlfw_subtract_double_column_vector(P,A);
 if(E==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 mlfw_column_vec_double_destroy(P);
 return ;
 }
-/*	COLUMN VECTOR TO ROW VECTOR (TRANSPOSE)
-1 argu: Column vector to convert it into row vector
-*/
-//mlfw_row_vec_double * mlfw_transpose_double_column_vector(mlfw_column_vec_double *column_vector);
 ET=mlfw_column_vec_double_transpose(E);
 if(ET==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(E);
 return;
 }
-/*	MULTIPLY TWO VECTOR
-1 argu: Column vector
-2 argu: Row vector
-*/
-//mlfw_column_vec_double * mlfw_multiply_double_column_vector_with_double_row_vector(mlfw_column_vec_double * column_vector,mlfw_row_vec_double *row_vector);
-
 ETE=mlfw_multiply_double_row_vector_with_column_vector(ET,E);
 if(ETE==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 mlfw_column_vec_double_destroy(P);
@@ -160,32 +145,80 @@ mlfw_column_vec_double_destroy(E);
 mlfw_row_vec_double_destroy(ET);
 return ;
 }
-//double mlfw_column_vec_double_get(mlfw_column_vec_double *vector,index_t index);
 sum_of_squared_error_values=mlfw_column_vec_double_get(ETE,0);
-final_error_value=sum_of_squared_error_values/I_rows;
+final_error_value=sum_of_squared_error_values/(2*I_rows);	//change
 
-printf("sum of squared error Values: %20.15lf\n",sum_of_squared_error_values);
-printf("Final error value: %20.15lf\n",final_error_value);
+printf("Iteration Number: %" PRIu64 ", Error: %20.15lf\n",k,final_error_value);
 
 //Now, Here are logic to update 'Mi' and 'Ci' to minimizes error values of (Yi=MiXi+Ci)
-
-//Releases memory
+ITE=mlfw_multiply_double_matrix_with_column_vector(IT,E);
+if(ITE==NULL)
+{
+printf("1: Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(E);
 mlfw_row_vec_double_destroy(ET);
 mlfw_column_vec_double_destroy(ETE);
+return ;
 }
-//void mlfw_mat_double_copy(mlfw_mat_double *target,mlfw_mat_double *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index);
-//mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matrix,index_t column_index);
-//mlfw_column_vec_double * mlfw_multiply_double_matrix_with_column_vector(mlfw_mat_double *matrix,mlfw_column_vec_double*vector);
-//mlfw_column_vec_double * mlfw_subtract_double_column_vector(mlfw_column_vec_double *first_vector,mlfw_column_vec_double *second_vector);
-//mlfw_row_vec_double * mlfw_transpose_double_column_vector(mlfw_column_vec_double *column_vector);
-//mlfw_column_vec_double * mlfw_multiply_double_column_vector_with_double_row_vector(mlfw_column_vec_double * column_vector,mlfw_row_vec_double *row_vector);
-//double mlfw_column_vec_double_get(mlfw_column_vec_double *vector index_t index);
+						//Learning rate
+TMP=mlfw_multiply_double_scalar_with_column_vector(0.0001/I_rows,ITE);
+if(TMP==NULL)
+{
+printf("2: Low memory\n");
+mlfw_mat_double_destroy(I);
+mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
+mlfw_column_vec_double_destroy(A);
+mlfw_column_vec_double_destroy(m);
+mlfw_column_vec_double_destroy(P);
+mlfw_column_vec_double_destroy(E);
+mlfw_row_vec_double_destroy(ET);
+mlfw_column_vec_double_destroy(ETE);
+mlfw_column_vec_double_destroy(ITE);
+return;
+}
+
+um=mlfw_subtract_double_column_vector(m,TMP);
+if(um==NULL)
+{
+printf("3: Low memory\n");
+mlfw_mat_double_destroy(I);
+mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
+mlfw_column_vec_double_destroy(A);
+mlfw_column_vec_double_destroy(m);
+mlfw_column_vec_double_destroy(P);
+mlfw_column_vec_double_destroy(E);
+mlfw_row_vec_double_destroy(ET);
+mlfw_column_vec_double_destroy(ETE);
+mlfw_column_vec_double_destroy(ITE);
+mlfw_column_vec_double_destroy(TMP);
+return;
+}
+mlfw_column_vec_double_destroy(m);		//old m vector released
+m=um; 	//now, m is pointing to newly created vector with updated values
+
+mlfw_column_vec_double_destroy(P);
+mlfw_column_vec_double_destroy(E);
+mlfw_row_vec_double_destroy(ET);
+mlfw_column_vec_double_destroy(ETE);
+mlfw_column_vec_double_destroy(ITE);
+mlfw_column_vec_double_destroy(TMP);
+++k;
+}
+//Releases memory
+mlfw_mat_double_destroy(I);
+mlfw_mat_double_destroy(dataset);
+mlfw_mat_double_destroy(IT);
+mlfw_column_vec_double_destroy(A);
+mlfw_column_vec_double_destroy(m);
+}
 int main()
 {
 int x;
