@@ -80,6 +80,25 @@ mlfw_column_vec_double_set(vector,0,value);
 return vector;
 }
 
+mlfw_column_vec_double * mlfw_multiply_double_scalar_with_column_vector(double scalar_value,mlfw_column_vec_double *vector)
+{
+mlfw_column_vec_double *product_vector;
+dimension_t size;
+index_t i;
+double value;
+double product;
+if(vector==NULL) return NULL;
+size=mlfw_column_vec_double_get_size(vector);
+product_vector=mlfw_column_vec_double_create_new(size);
+if(product_vector==NULL) return NULL;
+for(i=0;i<size;i++)
+{
+value=mlfw_column_vec_double_get(vector,i);
+product=value*scalar_value;
+mlfw_column_vec_double_set(product_vector,i,product);
+}
+return product_vector;
+}
 
 //Vector conversions
 //mlfw_row_vec_double * mlfw_transpose_double_column_vector(mlfw_column_vec_double *column_vector);

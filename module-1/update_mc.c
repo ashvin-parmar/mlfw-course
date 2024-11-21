@@ -189,9 +189,9 @@ return ;
 }
 //double mlfw_column_vec_double_get(mlfw_column_vec_double *vector,index_t index);
 sum_of_squared_error_values=mlfw_column_vec_double_get(ETE,0);
-final_error_value=sum_of_squared_error_values/I_rows;
+final_error_value=sum_of_squared_error_values/0.0001*I_rows;
 
-printf("sum of squared error Values: %20.15lf\n",sum_of_squared_error_values);
+//printf("sum of squared error Values: %20.15lf\n",sum_of_squared_error_values);
 printf("Final error value: %20.15lf\n",final_error_value);
 //Testing code Here 
 um=mlfw_multiply_double_matrix_with_column_vector(IT,E);
