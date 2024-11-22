@@ -36,6 +36,22 @@ matrix->rows=rows;
 matrix->columns=columns;
 return matrix;
 }
+mlfw_mat_double * mlfw_mat_double_create_new_filled(dimension_t rows,dimension_t columns,double value)
+{
+mlfw_mat_double *matrix;
+index_t r,c;
+if(rows<=0 || columns<=0) return NULL;
+matrix=mlfw_mat_double_create_new(rows,columns);
+if(matrix==NULL) return NULL;
+for(r=0;r<rows;r++)
+{
+for(c=0;c<columns;c++)
+{
+matrix->data[r][c]=value;
+}
+}
+return matrix;
+}
 void mlfw_mat_double_destroy(mlfw_mat_double *matrix)
 {
 index_t i;

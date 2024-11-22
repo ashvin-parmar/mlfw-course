@@ -108,8 +108,7 @@ history_rows=HISTORY_FILE_SIZE;
 history_columns=I_columns+2;	//1 for error values at index 1
 				//2 for iteration values at index 0
 
-//history=mlfw_mat_double_create_new_filled(history_rows,history_columns);
-history=mlfw_mat_double_create_new(history_rows,history_columns);
+history=mlfw_mat_double_create_new_filled(history_rows,history_columns,0.0);
 if(history==NULL)
 {
 printf("Unable to Train, Low memory\n");
@@ -120,7 +119,6 @@ mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 return ;
 }
-mlfw_mat_double_fill(history,0,0,history_rows-1,history_columns-1,0.0);
 
 history_index=0;
 k=0;
