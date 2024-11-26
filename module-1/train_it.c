@@ -20,6 +20,7 @@ char *HISTORY_FILE_NAME=NULL;
 
 void train_it()
 {
+FILE * graph_file;
 mlfw_mat_double *history;
 dimension_t history_rows,history_columns;
 double iteration_number;
@@ -119,7 +120,7 @@ mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 return ;
 }
-
+graph_file=fopen("graph.csv","w");
 history_index=0;
 k=0;
 while(STOP_FLAG==0)
@@ -183,6 +184,7 @@ sum_of_squared_error_values=mlfw_column_vec_double_get(ETE,0);
 final_error_value=sum_of_squared_error_values/(2*I_rows);	//change
 
 printf("Iteration Number: %" PRIu64 ", Error: %20.15lf\n",k+1,final_error_value);
+fprintf(graph_file,"%" PRIu64 ",%lf\n",k+1,final_error_value);
 iteration_number=(double)(k+1);
 //logic to store error values, iteration and thier respective m vector values to history matrix starts
 if(history_index==HISTORY_FILE_SIZE)
@@ -203,6 +205,7 @@ j=mlfw_column_vec_double_get_size(m);
 for(i=0;i<j;i++)
 {
 mlfw_mat_double_set(history,history_index,i+2,mlfw_column_vec_double_get(m,i));
+//printf("Data: %lf\n",mlfw_column_vec_double_get(m,i));
 }
 history_index++;
 
@@ -274,7 +277,7 @@ mlfw_column_vec_double_destroy(TMP);
 ++k;
 }
 //Store history matrix values in a file
-
+fclose(graph_file);
 mlfw_mat_double_to_csv(history,HISTORY_FILE_NAME);
 
 //Releases memory
