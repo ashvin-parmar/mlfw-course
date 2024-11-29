@@ -11,6 +11,8 @@ char *RESULTS_FILE_NAME=NULL;
 
 void test_it()
 {
+double X=0.017559;
+double Y=0.999689;
 FILE *result_file;
 index_t r,c;
 mlfw_mat_double *dataset; //For CSV File to Dataset matrix conversion
@@ -51,8 +53,8 @@ mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
 return ;
 }
-mlfw_column_vec_double_set(m,0,0.010541);
-mlfw_column_vec_double_set(m,1,0.999814);
+mlfw_column_vec_double_set(m,0,X);
+mlfw_column_vec_double_set(m,1,Y);
 P=mlfw_multiply_double_matrix_with_column_vector(I,m);
 if(P==NULL)
 {
