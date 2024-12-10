@@ -18,7 +18,7 @@ for(r=0;r<rows;r++)
 {
 for(c=0;c<columns;c++)
 {
-mlfw_mat_string_get(matrix,r,c,&str);
+mlfw_mat_string_get(matrix,r,c,str);
 if(str!=NULL)
 {
 printf("%s ",str);
