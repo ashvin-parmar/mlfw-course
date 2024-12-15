@@ -18,4 +18,8 @@ mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matr
 void mlfw_mat_double_fill(mlfw_mat_double *matrix,index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value);
 mlfw_mat_double * mlfw_mat_double_shuffle(mlfw_mat_double *matrix, uint8_t shuffle_times);
 mlfw_mat_double *mlfw_mat_double_transpose(mlfw_mat_double *matrix);
+
+double mlfw_mat_double_get_minimum(mlfw_mat_double *matrix,index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
+
+double mlfw_mat_double_get_maximum(mlfw_mat_double *matrix,index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
 #endif
