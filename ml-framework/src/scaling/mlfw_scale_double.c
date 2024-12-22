@@ -39,7 +39,7 @@ free(max);
 return NULL;
 }
 i=0;
-for(c=start_column_index;c<end_column_index;c++)
+for(c=start_column_index;c<=end_column_index;c++)
 {
 min[i]=mlfw_mat_double_get_minimum(matrix,start_row_index,end_row_index,c,c);
 max[i]=mlfw_mat_double_get_maximum(matrix,start_row_index,end_row_index,c,c);	//As per column (c,c)
@@ -52,7 +52,7 @@ c=start_column_index;
 for(new_matrix_c=0;new_matrix_c<new_matrix_columns;new_matrix_c++)
 {
 value=mlfw_mat_double_get(matrix,r,c);
-scaled_value=(value-min[c])/(max[c]-min[c]);
+scaled_value=(value-min[new_matrix_c])/(max[new_matrix_c]-min[new_matrix_c]);
 mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
 ++c;
 }
@@ -60,4 +60,3 @@ mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
 }
 return new_matrix;
 }
-

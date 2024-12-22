@@ -24,8 +24,8 @@ for(i=0;i<set->size;i++)
 {
 free(set->data[i]);
 }
-free(set->data);
-free(set);
+if(set->data) free(set->data);
+if(set) free(set);
 set=NULL;
 }
 void mlfw_set_string_get(mlfw_set_string *set,index_t i,char **string)
