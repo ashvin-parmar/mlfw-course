@@ -3,8 +3,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-mlfw_mat_double *mlfw_scale_double_min_max(mlfw_mat_double *matrix,index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)
+mlfw_mat_double *mlfw_scale_double_min_max(mlfw_mat_double *matrix,index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index,char *min_max_file)
 {
+FILE *file;
 double scaled_value;
 double value;
 dimension_t matrix_rows,matrix_columns;
@@ -58,5 +59,29 @@ mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
 }
 ++r;
 }
+
+file=fopen(min_max_file,"w");
+if(file==NULL) 
+{
+free(min);
+free(max);
+mlfw_mat_double_destroy(new_matrix);
+return NULL;
+}
+for(i=0;i<new_matrix_columns;i++)
+{
+fprintf(file,"%lf",min[i]);
+if(i==new_matrix_columns-1) fputc('\n',file);
+else fputc(',',file);
+}
+for(i=0;i<new_matrix_columns;i++)
+{
+fprintf(file,"%lf",max[i]);
+if(i==new_matrix_columns-1) fputc('\n',file);
+else fputc(',',file);
+}
+fclose(file);
+free(min);
+free(max);
 return new_matrix;
 }
