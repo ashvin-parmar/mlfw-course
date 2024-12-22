@@ -85,3 +85,48 @@ free(min);
 free(max);
 return new_matrix;
 }
+
+mlfw_mat_double *mlfw_scale_double_with_given_min_max(mlfw_mat_double *matrix,index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index,mlfw_mat_double *min_max_matrix)
+{
+double scaled_value;
+double value;
+dimension_t matrix_rows,matrix_columns;
+dimension_t min_max_rows,min_max_columns;
+dimension_t new_matrix_rows,new_matrix_columns;
+mlfw_mat_double *new_matrix;
+double max;
+double min;
+index_t r,c;
+index_t new_matrix_r,new_matrix_c;
+if(matrix==NULL || min_max_matrix==NULL) return NULL;
+mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
+mlfw_mat_double_get_dimension(min_max_matrix,&min_max_rows,&min_max_columns);
+if(min_max_rows!=2) return NULL;
+if(start_row_index<0 || end_row_index>=matrix_rows) return NULL;
+if(start_column_index<0 || end_column_index>=matrix_columns) return NULL;
+if(start_row_index>end_row_index || start_column_index>end_column_index) return NULL;
+new_matrix_rows=end_row_index-start_row_index+1;
+new_matrix_columns=end_column_index-start_column_index+1;
+if(min_max_columns!=new_matrix_columns) return NULL;
+
+new_matrix=mlfw_mat_double_create_new(new_matrix_rows,new_matrix_columns);
+if(new_matrix==NULL) return NULL;
+
+r=start_row_index;
+for(new_matrix_r=0;new_matrix_r<new_matrix_rows;new_matrix_r++)
+{
+c=start_column_index;
+for(new_matrix_c=0;new_matrix_c<new_matrix_columns;new_matrix_c++)
+{
+min=mlfw_mat_double_get(min_max_matrix,0,new_matrix_c);
+max=mlfw_mat_double_get(min_max_matrix,1,new_matrix_c);
+value=mlfw_mat_double_get(matrix,r,c);
+scaled_value=(value-min)/(max-min);
+mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
+++c;
+}
+++r;
+}
+
+return new_matrix;
+}
