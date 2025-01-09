@@ -15,7 +15,8 @@ mlfw_column_vec_double *mlfw_column_vec_double_create_new_filled(dimension_t siz
 mlfw_row_vec_double * mlfw_column_vec_double_transpose(mlfw_column_vec_double *vector);
 dimension_t mlfw_column_vec_double_get_size(mlfw_column_vec_double *vector);
 double mlfw_column_vec_double_get_mean(mlfw_column_vec_double *vector);
-
+void mlfw_column_vec_double_to_csv(mlfw_column_vec_double *vector,char *csv_filename);
+mlfw_column_vec_double * mlfw_column_vec_double_from_csv(char *csv_filename);
 //For Rows Vector
 mlfw_row_vec_double * mlfw_row_vec_double_create_new(dimension_t size);
 void mlfw_row_vec_double_destroy(mlfw_row_vec_double *vector);
@@ -25,5 +26,7 @@ mlfw_row_vec_double *mlfw_row_vec_double_create_new_filled(dimension_t size,doub
 mlfw_column_vec_double * mlfw_row_vec_double_transpose(mlfw_row_vec_double *vector);
 dimension_t mlfw_row_vec_double_get_size(mlfw_row_vec_double *vector);
 double mlfw_row_vec_double_get_mean(mlfw_row_vec_double *vector);
+void mlfw_row_vec_double_to_csv(mlfw_row_vec_double *vector,char *csv_filename);
+mlfw_row_vec_double * mlfw_row_vec_double_from_csv(char *csv_filename);
 
 #endif

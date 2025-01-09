@@ -1,8 +1,3 @@
-//Testcase for Train Machine to learn new feature of finding minimum error Values
-//Update m and c value's as per sir code
-//Make it a tool for creating history file or m and c values
-//and creating a seperate thread to wok for that train_it function
-
 #include<mlfw_matrix.h>
 #include<mlfw_vector.h>
 #include<mlfw_operations.h>
@@ -16,7 +11,8 @@ char *DATASET_FILE_NAME=NULL;
 double LEARNING_RATE=1.0;
 dimension_t HISTORY_FILE_SIZE=0;
 char *HISTORY_FILE_NAME=NULL;
-
+char *PARAMETERS_FILE_NAME=NULL;
+char *GRAPH_FILE_NAME=NULL;
 
 void train_it()
 {
@@ -120,7 +116,7 @@ mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 return ;
 }
-graph_file=fopen("graph.csv","w");
+graph_file=fopen(GRAPH_FILE_NAME,"w");
 history_index=0;
 k=0;
 while(STOP_FLAG==0)
@@ -229,7 +225,7 @@ mlfw_column_vec_double_destroy(ETE);
 return ;
 }
 						//Learning rate
-TMP=mlfw_multiply_double_scalar_with_column_vector(LEARNING_RATE*(1.0/I_rows),ITE);
+TMP=mlfw_multiply_double_scalar_with_column_vector((LEARNING_RATE)*(1.0/I_rows),ITE);
 if(TMP==NULL)
 {
 printf("Low memory\n");
@@ -276,10 +272,10 @@ mlfw_column_vec_double_destroy(ITE);
 mlfw_column_vec_double_destroy(TMP);
 ++k;
 }
-//Store history matrix values in a file
 fclose(graph_file);
+//Store history matrix values in a file
 mlfw_mat_double_to_csv(history,HISTORY_FILE_NAME);
-
+mlfw_column_vec_double_to_csv(m,PARAMETERS_FILE_NAME);
 //Releases memory
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
@@ -299,9 +295,9 @@ pthread_t thread_id;
 char *ptr;
 char m;
 int result;
-if(argc!=5 && argc!=6)
+if(argc!=7 && argc!=8)
 {
-printf("[Usage: train_it.out dataset_filename learning_rate history_file_name history_file_size number_of_iteration(optional)]\n");
+printf("[Usage: train_it.out dataset_filename learning_rate history_file_name history_file_size parameter_file graph_data_file number_of_iteration(optional)]\n");
 return 0;
 }
 DATASET_FILE_NAME=argv[1];
@@ -315,10 +311,12 @@ if(HISTORY_FILE_SIZE<5)
 printf("History file size must be more than equal to 5.\n");
 return 0;
 }
-if(argc==6)
+PARAMETERS_FILE_NAME=argv[5];
+GRAPH_FILE_NAME=argv[6];
+if(argc==8)
 {
 ptr=NULL;
-NUMBER_OF_ITERATION=strtoull(argv[5],&ptr,10);
+NUMBER_OF_ITERATION=strtoull(argv[7],&ptr,10);
 }
 
 result=pthread_create(&thread_id,NULL,thread_function,NULL);
