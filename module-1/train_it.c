@@ -81,7 +81,7 @@ return ;
 }
 
 
-A=mlfw_mat_double_create_column_vec(dataset,1);
+A=mlfw_mat_double_create_column_vec(dataset,dataset_columns-1);
 if(A==NULL)
 {
 printf("Unable to Train, Low memory\n");

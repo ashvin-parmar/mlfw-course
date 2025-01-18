@@ -171,7 +171,7 @@ for(target_c=from_target_column_index,source_c=from_source_column_index;source_c
 {
 if(target_c>=0 && target_r>=0 && target_r<target_rows && target_c<target_columns)
 {
-mlfw_mat_double_set(target,target_r,target_c,mlfw_mat_double_get(source,target_r,target_c));
+mlfw_mat_double_set(target,target_r,target_c,mlfw_mat_double_get(source,source_r,source_c));
 }
 }
 }
