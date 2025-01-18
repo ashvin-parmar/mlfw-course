@@ -12,7 +12,7 @@ mlfw_column_vec_double *P;
 mlfw_column_vec_double *R;
 mlfw_row_vec_double *RT;
 mlfw_column_vec_double *RTR;
-double mean_of_vector;
+double mean_of_actuals;
 mlfw_column_vec_double *M;
 mlfw_column_vec_double *AM;
 mlfw_row_vec_double *AMT;
@@ -33,14 +33,15 @@ if(dataset==NULL)
 printf("Unable to load dataset\n");
 return ;
 }
-A=mlfw_mat_double_create_column_vec(dataset,1);
+mlfw_mat_double_get_dimension(dataset,&dataset_rows,&dataset_columns);
+A=mlfw_mat_double_create_column_vec(dataset,dataset_columns-2);	//second last column
 if(A==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(dataset);
 return ;
 }
-P=mlfw_mat_double_create_column_vec(dataset,2);
+P=mlfw_mat_double_create_column_vec(dataset,dataset_columns-1);	//last column
 if(P==NULL)
 {
 printf("Low on memory\n");
@@ -48,7 +49,6 @@ mlfw_mat_double_destroy(dataset);
 mlfw_column_vec_double_destroy(A);
 return;
 }
-mlfw_mat_double_get_dimension(dataset,&dataset_rows,&dataset_columns);
 
 R=mlfw_subtract_double_column_vector(A,P);
 if(R==NULL)
@@ -82,8 +82,8 @@ return;
 }
 SSR=mlfw_column_vec_double_get(RTR,0);
 
-mean_of_vector=mlfw_column_vec_double_get_mean(A);
-M=mlfw_column_vec_double_create_new(dataset_rows);
+mean_of_actuals=mlfw_column_vec_double_get_mean(A);
+M=mlfw_column_vec_double_create_new_filled(dataset_rows,mean_of_actuals);
 if(M==NULL)
 {
 printf("Low memory\n");

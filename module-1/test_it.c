@@ -8,17 +8,15 @@
 
 char *DATASET_FILE_NAME=NULL;
 char *RESULTS_FILE_NAME=NULL;
+char *PARAMETER_FILE_NAME=NULL;
 
 void test_it()
 {
-double X=0.017559;
-double Y=0.999689;
 FILE *result_file;
 index_t r,c;
 mlfw_mat_double *dataset; //For CSV File to Dataset matrix conversion
 dimension_t dataset_rows;
 dimension_t dataset_columns;
-
 mlfw_mat_double *I; //For Dataset to conversion of 'Xn' elements Matrix + One columns for Unity
 dimension_t I_rows;
 dimension_t I_columns;
@@ -37,7 +35,7 @@ I_columns=dataset_columns-1+1;		//+1 Columns for Unity | -1 Columns of Yn Data
 I=mlfw_mat_double_create_new(I_rows,I_columns);
 if(I==NULL)
 {
-printf("Unable to Train, Low on memory\n");
+printf("Unable to Test, Low on memory\n");
 mlfw_mat_double_destroy(dataset);
 return ;
 }
@@ -45,20 +43,18 @@ mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_rows-1,dataset_columns-2);
 
 mlfw_mat_double_fill(I,0,0,dataset_rows-1,0,1.0);
 
-m=mlfw_column_vec_double_create_new(I_columns);
+m=mlfw_column_vec_double_from_csv(PARAMETER_FILE_NAME);
 if(m==NULL)
 {
-printf("Unable to Train, Low memory\n");
+printf("Unable to Test, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
 return ;
 }
-mlfw_column_vec_double_set(m,0,X);
-mlfw_column_vec_double_set(m,1,Y);
 P=mlfw_multiply_double_matrix_with_column_vector(I,m);
 if(P==NULL)
 {
-printf("Unable to Train, Low memory\n");
+printf("Unable to Test, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
 mlfw_column_vec_double_destroy(m);
@@ -83,13 +79,14 @@ mlfw_column_vec_double_destroy(P);
 }
 int main(int argc,char *argv[])
 {
-if(argc!=3)
+if(argc!=4)
 {
-printf("[Usage: test_it.out dataset_filename result_filename]\n");
+printf("[Usage: test_it.out dataset_filename parameter_filename result_filename]\n");
 return 0;
 }
 DATASET_FILE_NAME=argv[1];
-RESULTS_FILE_NAME=argv[2];
+PARAMETER_FILE_NAME=argv[2];
+RESULTS_FILE_NAME=argv[3];
 test_it();
 return 0;
 }
