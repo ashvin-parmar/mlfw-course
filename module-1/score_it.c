@@ -139,7 +139,7 @@ return;
 }
 SST=mlfw_column_vec_double_get(AMTAM,0);
 r2score=1-(SSR/SST);
-printf("Score of out tool is : %lf\n",r2score);
+printf("Score of our tool is : %lf\n",r2score);
 
 mlfw_mat_double_destroy(dataset);
 mlfw_column_vec_double_destroy(A);
