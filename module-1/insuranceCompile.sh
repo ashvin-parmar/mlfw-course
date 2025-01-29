@@ -6,6 +6,7 @@ rm *.out
 ./cmp.sh min_max_test_data_scalar.c min_max_test_data_scalar.out
 ./cmp.sh test_it.c test_it.out 
 ./cmp.sh score_it.c score_it.out
+./cmp.sh reverse_scale_output.c reverse_scale_output.out
 #----------Here Insurance Specific Commands
 ./one_hot_encode.out Insurance/insurance.csv Insurance/one_hot_encoded_insurance.csv 1,4,5 Y
 ./create_test_train_dataset.out Insurance/one_hot_encoded_insurance.csv Insurance/test.csv Insurance/train.csv 20
@@ -17,4 +18,5 @@ rm *.out
 ./test_it.out Insurance/scaled_test.csv Insurance/model.csv Insurance/scaled_result.csv
 #Opening scaled_result.csv to remove header [Do it manually]
 vim Insurance/scaled_result.csv
-./score_it.out Insurance/scaled_result.csv
+./reverse_scale_output.out Insurance/scaled_result.csv Insurance/normal_result.csv Insurance/min_max_scalar.csv
+./score_it.out Insurance/normal_result.csv 
