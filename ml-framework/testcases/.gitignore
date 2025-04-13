@@ -1,0 +1,3 @@
+*.csv
+!IceCreamSales.csv
+!insurance.csv

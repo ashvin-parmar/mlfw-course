@@ -40,22 +40,6 @@ matrix->rows=rows;
 matrix->columns=columns;
 return matrix;
 }
-/*mlfw_mat_string * mlfw_mat_string_create_new_filled(dimension_t rows,dimension_t columns,char *value)
-{
-mlfw_mat_double *matrix;
-index_t r,c;
-if(rows<=0 || columns<=0) return NULL;
-matrix=mlfw_mat_double_create_new(rows,columns);
-if(matrix==NULL) return NULL;
-for(r=0;r<rows;r++)
-{
-for(c=0;c<columns;c++)
-{
-matrix->data[r][c]=value;
-}
-}
-return matrix;
-}*/
 void mlfw_mat_string_destroy(mlfw_mat_string *matrix)
 {
 index_t r,c;
@@ -135,6 +119,25 @@ index++;
 }
 fclose(file);
 return matrix;
+}
+void mlfw_mat_string_to_csv(mlfw_mat_string *matrix,const char *csv_file_name)
+{
+FILE *file;
+index_t r,c;
+if(matrix==NULL) return ;
+if(csv_file_name==NULL) return;
+file=fopen(csv_file_name,"w");
+if(file==NULL) return ;
+for(r=0;r<matrix->rows;r++)
+{
+for(c=0;c<matrix->columns;c++)
+{
+fputs(matrix->data[r][c],file);
+if(c<matrix->columns-1) fputc(',',file);
+else fputc('\n',file);
+}
+}
+fclose(file);
 }
 void mlfw_mat_string_get(mlfw_mat_string *matrix,index_t row,index_t column,char **string)
 {
