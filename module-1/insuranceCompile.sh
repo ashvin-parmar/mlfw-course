@@ -14,7 +14,7 @@ rm *.out
 ./min_max_test_data_scalar.out Insurance/test.csv Insurance/scaled_test.csv 0 11 Insurance/min_max_scalar.csv
 # over herer, change the number of arguments or skip it whatever when press enter [optional]
 # remove 60000 because its optional, Use 'Enter' key for stop training
-./train_it.out Insurance/scaled_train.csv 0.01 Insurance/history.csv 100 Insurance/model.csv Insurance/graph.csv 60000
+./train_it.out Insurance/scaled_train.csv 0.01 Insurance/history.csv 100 Insurance/model.csv Insurance/graph.csv 
 ./test_it.out Insurance/scaled_test.csv Insurance/model.csv Insurance/scaled_result.csv
 #Opening scaled_result.csv to remove header [Do it manually]
 vim Insurance/scaled_result.csv
