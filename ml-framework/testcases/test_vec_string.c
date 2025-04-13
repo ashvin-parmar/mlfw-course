@@ -28,7 +28,7 @@ free(*data);
 }
 mlfw_column_vec_string_to_csv(vector,"vec_string.csv");
 
-
-
+free(data);
+mlfw_column_vec_string_destroy(vector);
 return 0;
 }
