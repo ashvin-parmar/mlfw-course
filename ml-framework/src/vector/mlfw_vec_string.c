@@ -18,6 +18,7 @@ dimension_t size;
 mlfw_column_vec_string *mlfw_column_vec_string_create_new(dimension_t rows)
 {
 mlfw_column_vec_string *vector;
+index_t i;
 if(rows<=0) return NULL;
 vector=(mlfw_column_vec_string *)malloc(sizeof(mlfw_column_vec_string));
 if(vector==NULL) return NULL;
@@ -27,6 +28,7 @@ if(vector->data==NULL)
 mlfw_column_vec_string_destroy(vector);
 return NULL;
 }
+for(i=0;i<rows;i++) vector->data[i]=NULL;
 vector->size=rows;
 return vector;
 }
@@ -46,6 +48,7 @@ free(vector);
 }
 void mlfw_column_vec_string_get(mlfw_column_vec_string *vector,index_t index,char **string)
 {
+if(string==NULL) return;
 *string=NULL;
 if(vector==NULL) return ;
 if(index<0 || index>=vector->size) return;
@@ -80,12 +83,10 @@ for(i=0;i<column_vector->size;i++)
 if(column_vector->data[i])
 {
 row_vector->data[i]=(char *)malloc(sizeof(char)*(strlen(column_vector->data[i])+1));
-if(row_vector->data[i]==NULL) 
+if(row_vector->data[i]) 
 {
-mlfw_row_vec_string_destroy(row_vector);
-return NULL;
-}
 strcpy(row_vector->data[i],column_vector->data[i]);
+}
 }
 }
 return row_vector;
@@ -154,7 +155,7 @@ if(m=='\n')
 {
 string[index]='\0';
 vector->data[i]=(char *)malloc(sizeof(char)*(strlen(string)+1));
-strcpy(vector->data[i],string);
+if(vector->data[i]) strcpy(vector->data[i],string);
 index=0;
 i++;
 }
@@ -170,6 +171,7 @@ string[index]='\0';
 vector->data[i]=(char *)malloc(sizeof(char)*(strlen(string)+1));
 strcpy(vector->data[i],string);
 }
+fclose(file);
 return vector;
 }
 
@@ -177,15 +179,17 @@ return vector;
 mlfw_row_vec_string * mlfw_row_vec_string_create_new(dimension_t columns)
 {
 mlfw_row_vec_string *vector;
+index_t i;
 if(columns<=0) return NULL;
 vector=(mlfw_row_vec_string *)malloc(sizeof(mlfw_row_vec_string));
 if(vector==NULL) return NULL;
 vector->data=(char **)malloc(sizeof(char *)*columns);
 if(vector->data==NULL)
 {
-mlfw_row_vec_string_destroy(vector);
+free(vector);
 return NULL;
 }
+for(i=0;i<columns;i++) vector->data[i]=NULL;
 vector->size=columns;
 return vector;
 }
@@ -205,6 +209,7 @@ free(vector);
 }
 void mlfw_row_vec_string_get(mlfw_row_vec_string *vector,index_t index,char **string)
 {
+if(string==NULL) return;
 *string=NULL;
 if(vector==NULL) return ;
 if(index<0 || index>=vector->size) return;
@@ -231,21 +236,15 @@ mlfw_column_vec_string * mlfw_row_vec_string_transpose(mlfw_row_vec_string *row_
 {
 mlfw_column_vec_string *column_vector;
 index_t i;
+char *ptr;
 if(row_vector==NULL) return NULL;
 column_vector=mlfw_column_vec_string_create_new(row_vector->size);
 if(column_vector==NULL) return NULL;
 for(i=0;i<row_vector->size;i++)
 {
-if(row_vector->data[i])
-{
-column_vector->data[i]=(char *)malloc(sizeof(char)*(strlen(row_vector->data[i])+1));
-if(column_vector->data[i]==NULL) 
-{
-mlfw_column_vec_string_destroy(column_vector);
-return NULL;
-}
-strcpy(column_vector->data[i],row_vector->data[i]);
-}
+mlfw_row_vec_string_get(row_vector,i,&ptr);
+mlfw_column_vec_string_set(column_vector,i,ptr);
+free(ptr);
 }
 return column_vector;
 }
@@ -308,7 +307,7 @@ if(m==',')
 {
 string[index]='\0';
 vector->data[i]=(char *)malloc(sizeof(char)*(strlen(string)+1));
-strcpy(vector->data[i],string);
+if(vector->data[i]) strcpy(vector->data[i],string);
 index=0;
 i++;
 }
@@ -324,5 +323,6 @@ string[index]='\0';
 vector->data[i]=(char *)malloc(sizeof(char)*(strlen(string)+1));
 strcpy(vector->data[i],string);
 }
+fclose(file);
 return vector;
 }

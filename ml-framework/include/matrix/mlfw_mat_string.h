@@ -10,6 +10,7 @@ void mlfw_mat_string_to_csv(mlfw_mat_string *matrix,const char *csv_file_name);
 void mlfw_mat_string_get(mlfw_mat_string *matrix,index_t row,index_t column,char **value);
 void mlfw_mat_string_set(mlfw_mat_string *matrix,index_t row,index_t column,char *value);
 void mlfw_mat_string_get_dimension(mlfw_mat_string *matrix,dimension_t *rows,dimension_t *columns);
+mlfw_mat_string * mlfw_mat_string_transpose(mlfw_mat_string *matrix);
 
 /*
 void mlfw_mat_double_copy(mlfw_mat_double *target,mlfw_mat_double *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index);

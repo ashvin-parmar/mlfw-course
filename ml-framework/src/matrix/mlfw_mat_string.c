@@ -132,7 +132,7 @@ for(r=0;r<matrix->rows;r++)
 {
 for(c=0;c<matrix->columns;c++)
 {
-fputs(matrix->data[r][c],file);
+if(matrix->data[r][c]) fputs(matrix->data[r][c],file);
 if(c<matrix->columns-1) fputc(',',file);
 else fputc('\n',file);
 }
@@ -313,19 +313,23 @@ shuffle_matrix->data[idx][c]=tmp_var;
 }
 return shuffle_matrix;
 }
-mlfw_mat_double * mlfw_mat_double_transpose(mlfw_mat_double *matrix)
+*/
+mlfw_mat_string * mlfw_mat_string_transpose(mlfw_mat_string *matrix)
 {
-mlfw_mat_double * transpose_matrix;
+mlfw_mat_string *transposed_matrix;
+char *ptr;
 index_t r,c;
 if(matrix==NULL) return NULL;
-transpose_matrix=mlfw_mat_double_create_new(matrix->columns,matrix->rows);
-if(transpose_matrix==NULL) return NULL;
-for(r=0;r<matrix->rows;r++)
+transposed_matrix=mlfw_mat_string_create_new(matrix->columns,matrix->rows);
+if(transposed_matrix==NULL) return NULL;
+for(r=0;r<=matrix->rows;r++)
 {
-for(c=0;c<matrix->columns;c++)
+for(c=0;c<=matrix->columns;c++)
 {
-transpose_matrix->data[c][r]=matrix->data[r][c];
+mlfw_mat_string_get(matrix,r,c,&ptr);
+mlfw_mat_string_set(transposed_matrix,c,r,ptr);
+free(ptr);
 }
 }
-return transpose_matrix;
-}*/
+return transposed_matrix;
+}
