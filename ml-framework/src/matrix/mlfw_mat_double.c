@@ -61,11 +61,10 @@ free(matrix->data);
 free(matrix);
 matrix=NULL;
 }
-mlfw_mat_double * mlfw_mat_double_from_csv(const char *csv_file_name)
+mlfw_mat_double * mlfw_mat_double_from_csv(const char *csv_file_name,mlfw_mat_double *matrix)
 {
 index_t r,c;
 dimension_t rows,columns;
-mlfw_mat_double *matrix;
 double value;
 int index;
 char m;
@@ -87,11 +86,22 @@ if(rows==0 && m==',') columns++;
 if(m=='\n') rows++;
 }
 columns++;
+if(matrix==NULL)
+{
 matrix=(mlfw_mat_double *)mlfw_mat_double_create_new(rows,columns);
 if(matrix==NULL)
 {
 fclose(file);
 return NULL;
+}
+}
+else
+{
+if(matrix->columns!=columns || matrix->rows!=rows)
+{
+fclose(file);
+return NULL;
+}
 }
 rewind(file);
 r=0;
@@ -176,18 +186,23 @@ mlfw_mat_double_set(target,target_r,target_c,mlfw_mat_double_get(source,source_r
 }
 }
 }
-mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matrix,index_t column_index)
+mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matrix,index_t column_index,mlfw_column_vec_double *vector)
 {
-mlfw_column_vec_double *vector;
 dimension_t matrix_columns;
 dimension_t matrix_rows;
 index_t r,c;
 if(matrix==NULL) return NULL;
 mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
 if(column_index>=matrix_columns || column_index<0) return NULL;
-
+if(vector==NULL)
+{
 vector=mlfw_column_vec_double_create_new(matrix_rows);
 if(vector==NULL) return NULL;
+}
+else
+{
+if(mlfw_column_vec_double_get_size(vector)!=matrix_rows) return NULL;
+}
 c=column_index;
 for(r=0;r<matrix_rows;r++)
 {
@@ -244,9 +259,8 @@ fputc(seperator,file);
 }
 fclose(file);
 }
-mlfw_mat_double * mlfw_mat_double_shuffle(mlfw_mat_double *matrix, uint8_t how_many_times_to_shuffle)
+mlfw_mat_double * mlfw_mat_double_shuffle(mlfw_mat_double *matrix, uint8_t how_many_times_to_shuffle,mlfw_mat_double *shuffle_matrix)
 {
-mlfw_mat_double *shuffle_matrix;
 int random;
 index_t a,b;
 index_t c,r,idx,end_at_index;
@@ -254,8 +268,15 @@ uint8_t j;
 double tmp_var;
 if(matrix==NULL) return NULL;
 if(how_many_times_to_shuffle<=0) return NULL;
+if(shuffle_matrix==NULL)
+{
 shuffle_matrix=mlfw_mat_double_create_new(matrix->rows,matrix->columns);
 if(shuffle_matrix==NULL) return NULL;
+}
+else
+{
+if(shuffle_matrix->rows!=matrix->rows || shuffle_matrix->columns!=matrix->columns) return NULL;
+}
 mlfw_mat_double_copy(shuffle_matrix,matrix,0,0,0,0,matrix->rows-1,matrix->columns-1);
 b=shuffle_matrix->rows-1;
 end_at_index=shuffle_matrix->rows-3;
@@ -277,13 +298,19 @@ shuffle_matrix->data[idx][c]=tmp_var;
 }
 return shuffle_matrix;
 }
-mlfw_mat_double * mlfw_mat_double_transpose(mlfw_mat_double *matrix)
+mlfw_mat_double * mlfw_mat_double_transpose(mlfw_mat_double *matrix,mlfw_mat_double *transpose_matrix)
 {
-mlfw_mat_double * transpose_matrix;
 index_t r,c;
 if(matrix==NULL) return NULL;
+if(transpose_matrix==NULL)
+{
 transpose_matrix=mlfw_mat_double_create_new(matrix->columns,matrix->rows);
 if(transpose_matrix==NULL) return NULL;
+}
+else
+{
+if(transpose_matrix->columns!=matrix->rows || transpose_matrix->rows!=matrix->columns) return NULL;
+}
 for(r=0;r<matrix->rows;r++)
 {
 for(c=0;c<matrix->columns;c++)
