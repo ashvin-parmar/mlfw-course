@@ -57,17 +57,22 @@ if(vector==NULL) return NULL;
 for(i=0;i<size;i++) vector->data[i]=value;
 return vector;
 }
-mlfw_row_vec_double * mlfw_column_vec_double_transpose(mlfw_column_vec_double *column_vector)
+mlfw_row_vec_double * mlfw_column_vec_double_transpose(mlfw_column_vec_double *column_vector,mlfw_row_vec_double *row_vector)
 {
-mlfw_row_vec_double *row_vector;
 index_t i;
 dimension_t size;
 if(column_vector==NULL) return NULL;
 size=mlfw_column_vec_double_get_size(column_vector);
 if(size<=0) return NULL;
+if(row_vector==NULL)
+{
 row_vector=mlfw_row_vec_double_create_new(size);
 if(row_vector==NULL) return NULL;
-
+}
+else
+{
+if(row_vector->size!=size) return NULL;
+}
 for(i=0;i<size;i++) mlfw_row_vec_double_set(row_vector,i,mlfw_column_vec_double_get(column_vector,i));
 return row_vector;
 }
@@ -102,9 +107,8 @@ else fputc(',',file);
 }
 fclose(file);
 }
-mlfw_column_vec_double * mlfw_column_vec_double_from_csv(char *csv_filename)
+mlfw_column_vec_double * mlfw_column_vec_double_from_csv(char *csv_filename,mlfw_column_vec_double *vector)
 {
-mlfw_column_vec_double *vector;
 dimension_t size;
 FILE *file;
 char m;
@@ -123,11 +127,22 @@ if(feof(file)) break;
 if(m==',') size++;
 }
 size++;
+if(vector==NULL)
+{
 vector=mlfw_column_vec_double_create_new(size);
 if(vector==NULL) 
 {
 fclose(file);
 return NULL;
+}
+}
+else
+{
+if(vector->size!=size)
+{
+fclose(file);
+return NULL;
+}
 }
 rewind(file);
 i=0;
@@ -198,13 +213,19 @@ if(vector==NULL) return NULL;
 for(i=0;i<vector->size;i++) vector->data[i]=value;
 return vector;
 }
-mlfw_column_vec_double * mlfw_row_vec_double_transpose(mlfw_row_vec_double *row_vector)
+mlfw_column_vec_double * mlfw_row_vec_double_transpose(mlfw_row_vec_double *row_vector,mlfw_column_vec_double *column_vector)
 {
-mlfw_column_vec_double *column_vector;
 index_t i;
 if(row_vector==NULL) return NULL;
+if(column_vector==NULL)
+{
 column_vector=mlfw_column_vec_double_create_new(row_vector->size);
 if(column_vector==NULL) return NULL;
+}
+else
+{
+if(column_vector->size!=row_vector->size) return NULL;
+}
 for(i=0;i<column_vector->size;i++) column_vector->data[i]=row_vector->data[i]; 
 return column_vector;
 }
@@ -235,9 +256,8 @@ else fputc(',',file);
 }
 fclose(file);
 }
-mlfw_row_vec_double * mlfw_row_vec_double_from_csv(char *csv_filename)
+mlfw_row_vec_double * mlfw_row_vec_double_from_csv(char *csv_filename,mlfw_row_vec_double *vector)
 {
-mlfw_row_vec_double *vector;
 dimension_t size;
 FILE *file;
 char m;
@@ -256,11 +276,22 @@ if(feof(file)) break;
 if(m==',') size++;
 }
 size++;
+if(vector==NULL)
+{
 vector=mlfw_row_vec_double_create_new(size);
 if(vector==NULL) 
 {
 fclose(file);
 return NULL;
+}
+}
+else
+{
+if(vector->size!=size) 
+{
+fclose(file);
+return NULL;
+}
 }
 rewind(file);
 i=0;
