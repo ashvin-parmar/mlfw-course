@@ -56,11 +56,10 @@ free(matrix->data);
 free(matrix);
 matrix=NULL;
 }
-mlfw_mat_string * mlfw_mat_string_from_csv(const char *csv_file_name)
+mlfw_mat_string * mlfw_mat_string_from_csv(const char *csv_file_name,mlfw_mat_string *matrix)
 {
 index_t r,c;
 dimension_t rows,columns;
-mlfw_mat_string *matrix;
 char string[5001]; 
 int index;
 char m;
@@ -81,11 +80,22 @@ if(rows==0 && m==',') columns++;
 if(m=='\n') rows++;
 }
 columns++;
+if(matrix==NULL)
+{
 matrix=(mlfw_mat_string *)mlfw_mat_string_create_new(rows,columns);
 if(matrix==NULL)
 {
 fclose(file);
 return NULL;
+}
+}
+else
+{
+if(matrix->rows!=rows || matrix->columns!=columns)
+{
+fclose(file);
+return NULL;
+}
 }
 rewind(file);
 r=0;
@@ -314,14 +324,20 @@ shuffle_matrix->data[idx][c]=tmp_var;
 return shuffle_matrix;
 }
 */
-mlfw_mat_string * mlfw_mat_string_transpose(mlfw_mat_string *matrix)
+mlfw_mat_string * mlfw_mat_string_transpose(mlfw_mat_string *matrix,mlfw_mat_string *transposed_matrix)
 {
-mlfw_mat_string *transposed_matrix;
 char *ptr;
 index_t r,c;
 if(matrix==NULL) return NULL;
+if(transposed_matrix==NULL)
+{
 transposed_matrix=mlfw_mat_string_create_new(matrix->columns,matrix->rows);
 if(transposed_matrix==NULL) return NULL;
+}
+else
+{
+if(transposed_matrix->rows!=matrix->columns || transposed_matrix->columns!=matrix->rows) return NULL;
+}
 for(r=0;r<=matrix->rows;r++)
 {
 for(c=0;c<=matrix->columns;c++)
