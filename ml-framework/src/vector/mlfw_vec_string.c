@@ -71,13 +71,19 @@ vector->data[index]=(char *)malloc(sizeof(char)*(strlen(string)+1));
 if(vector->data[index]==NULL) return;
 strcpy(vector->data[index],string);
 }
-mlfw_row_vec_string * mlfw_column_vec_string_transpose(mlfw_column_vec_string *column_vector)
+mlfw_row_vec_string * mlfw_column_vec_string_transpose(mlfw_column_vec_string *column_vector,mlfw_row_vec_string *row_vector)
 {
-mlfw_row_vec_string *row_vector;
 index_t i;
 if(column_vector==NULL) return NULL;
+if(row_vector==NULL)
+{
 row_vector=mlfw_row_vec_string_create_new(column_vector->size);
 if(row_vector==NULL) return NULL;
+}
+else
+{
+if(row_vector->size!=column_vector->size) return NULL;
+}
 for(i=0;i<column_vector->size;i++)
 {
 if(column_vector->data[i])
@@ -114,9 +120,8 @@ fputc('\n',file);
 }
 fclose(file);
 }
-mlfw_column_vec_string * mlfw_column_vec_string_from_csv(char *csv_file_name)
+mlfw_column_vec_string * mlfw_column_vec_string_from_csv(char *csv_file_name,mlfw_column_vec_string *vector)
 {
-mlfw_column_vec_string *vector;
 FILE *file;
 index_t size;
 char m;
@@ -142,8 +147,23 @@ index++;
 }
 }
 if(index) size++;
+if(vector==NULL)
+{
 vector=mlfw_column_vec_string_create_new(size);
-if(vector==NULL) return NULL;
+if(vector==NULL) 
+{
+fclose(file);
+return NULL;
+}
+}
+else
+{
+if(vector->size!=size)
+{
+fclose(file);
+return NULL;
+}
+}
 index=0;
 i=0;
 rewind(file);
@@ -232,14 +252,20 @@ vector->data[index]=(char *)malloc(sizeof(char)*(strlen(string)+1));
 if(vector->data[index]==NULL) return;
 strcpy(vector->data[index],string);
 }
-mlfw_column_vec_string * mlfw_row_vec_string_transpose(mlfw_row_vec_string *row_vector)
+mlfw_column_vec_string * mlfw_row_vec_string_transpose(mlfw_row_vec_string *row_vector,mlfw_column_vec_string *column_vector)
 {
-mlfw_column_vec_string *column_vector;
 index_t i;
 char *ptr;
 if(row_vector==NULL) return NULL;
+if(column_vector==NULL)
+{
 column_vector=mlfw_column_vec_string_create_new(row_vector->size);
 if(column_vector==NULL) return NULL;
+}
+else
+{
+if(column_vector->size!=row_vector->size) return NULL;
+}
 for(i=0;i<row_vector->size;i++)
 {
 mlfw_row_vec_string_get(row_vector,i,&ptr);
@@ -272,9 +298,8 @@ else fputc('\n',file);
 }
 fclose(file);
 }
-mlfw_row_vec_string * mlfw_row_vec_string_from_csv(char *csv_file_name)
+mlfw_row_vec_string * mlfw_row_vec_string_from_csv(char *csv_file_name,mlfw_row_vec_string *vector)
 {
-mlfw_row_vec_string *vector;
 FILE *file;
 index_t size;
 char m;
@@ -294,8 +319,23 @@ size++;
 }
 }
 size++;
+if(vector==NULL)
+{
 vector=mlfw_row_vec_string_create_new(size);
-if(vector==NULL) return NULL;
+if(vector==NULL) 
+{
+fclose(file);
+return NULL;
+}
+}
+else
+{
+if(vector->size!=size) 
+{
+fclose(file);
+return NULL;
+}
+}
 index=0;
 i=0;
 rewind(file);
