@@ -56,7 +56,7 @@ free(matrix->data);
 free(matrix);
 matrix=NULL;
 }
-mlfw_mat_string * mlfw_mat_string_from_csv(const char *csv_file_name,mlfw_mat_string *matrix)
+mlfw_mat_string * mlfw_mat_string_from_csv(const char *csv_file_name,mlfw_mat_string *matrix,mlfw_row_vec_string **header)
 {
 index_t r,c;
 dimension_t rows,columns;
@@ -130,7 +130,7 @@ index++;
 fclose(file);
 return matrix;
 }
-void mlfw_mat_string_to_csv(mlfw_mat_string *matrix,const char *csv_file_name)
+void mlfw_mat_string_to_csv(mlfw_mat_string *matrix,const char *csv_file_name,mlfw_row_vec_string *header)
 {
 FILE *file;
 index_t r,c;

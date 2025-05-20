@@ -102,7 +102,7 @@ dimension_t mlfw_column_vec_string_get_size(mlfw_column_vec_string *vector)
 if(vector==NULL) return 0;
 return vector->size;
 }
-void mlfw_column_vec_string_to_csv(mlfw_column_vec_string *vector,char *csv_file_name)
+void mlfw_column_vec_string_to_csv(mlfw_column_vec_string *vector,char *csv_file_name,mlfw_row_vec_string *header)
 {
 index_t i;
 FILE *file;
@@ -120,7 +120,7 @@ fputc('\n',file);
 }
 fclose(file);
 }
-mlfw_column_vec_string * mlfw_column_vec_string_from_csv(char *csv_file_name,mlfw_column_vec_string *vector)
+mlfw_column_vec_string * mlfw_column_vec_string_from_csv(char *csv_file_name,mlfw_column_vec_string *vector,mlfw_row_vec_string **header)
 {
 FILE *file;
 index_t size;
@@ -279,7 +279,7 @@ dimension_t mlfw_row_vec_string_get_size(mlfw_row_vec_string *vector)
 if(vector==NULL) return 0;
 return vector->size;
 }
-void mlfw_row_vec_string_to_csv(mlfw_row_vec_string *vector,char *csv_file_name)
+void mlfw_row_vec_string_to_csv(mlfw_row_vec_string *vector,char *csv_file_name,mlfw_row_vec_string *header)
 {
 index_t i;
 FILE *file;
@@ -298,7 +298,7 @@ else fputc('\n',file);
 }
 fclose(file);
 }
-mlfw_row_vec_string * mlfw_row_vec_string_from_csv(char *csv_file_name,mlfw_row_vec_string *vector)
+mlfw_row_vec_string * mlfw_row_vec_string_from_csv(char *csv_file_name,mlfw_row_vec_string *vector,mlfw_row_vec_string **header)
 {
 FILE *file;
 index_t size;

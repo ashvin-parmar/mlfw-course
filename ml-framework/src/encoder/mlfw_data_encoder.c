@@ -1,4 +1,5 @@
 #include<mlfw_matrix.h>
+#include<mlfw_vector.h>
 #include<mlfw_set.h>
 #include<mlfw_encoder.h>
 #include<stdio.h>
@@ -9,13 +10,14 @@ void mlfw_encoder_encode_one_hot(char *source,char *target,int *encode_columns,i
 FILE *target_file;
 mlfw_mat_string *matrix=NULL;
 mlfw_set_string **sets;
+mlfw_row_vec_string *header;
 char *string;
 char *set_string;
 dimension_t set_size;
 index_t i,j,r,c,data_start_row_index;
 dimension_t matrix_rows,matrix_columns;
 if(source==NULL || target==NULL || encode_columns==NULL || size<=0) return ;
-matrix=mlfw_mat_string_from_csv(source,matrix);
+matrix=mlfw_mat_string_from_csv(source,matrix,&header);
 if(matrix==NULL) return ;
 mlfw_mat_string_get_dimension(matrix,&matrix_rows,&matrix_columns);
 for(i=0;i<size;i++)

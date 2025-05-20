@@ -67,7 +67,7 @@ free(matrix->data);
 free(matrix);
 matrix=NULL;
 }
-mlfw_mat_double * mlfw_mat_double_from_csv(const char *csv_file_name,mlfw_mat_double *matrix)
+mlfw_mat_double * mlfw_mat_double_from_csv(const char *csv_file_name,mlfw_mat_double *matrix,mlfw_row_vec_string **header)
 {
 index_t r,c;
 dimension_t rows,columns;
@@ -108,6 +108,11 @@ if(matrix->columns!=columns || matrix->rows!=rows)
 fclose(file);
 return NULL;
 }
+}
+header=(mlfw_row_vec_string **)malloc(sizeof(mlfw_row_vec_string *)*columns);
+if(header==NULL)
+{
+//memory releasing
 }
 rewind(file);
 r=0;
@@ -239,7 +244,7 @@ mlfw_mat_double_set(matrix,r,c,value);
 }
 }
 }
-void mlfw_mat_double_to_csv(mlfw_mat_double *matrix,const char * csv_file_name)
+void mlfw_mat_double_to_csv(mlfw_mat_double *matrix,const char * csv_file_name,mlfw_row_vec_string *header)
 {
 index_t r,c;
 char seperator;
