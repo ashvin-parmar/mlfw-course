@@ -100,11 +100,35 @@ return mean;
 }
 void mlfw_column_vec_double_to_csv(mlfw_column_vec_double *vector,char *csv_filename,mlfw_row_vec_string *header)
 {
+dimension_t header_size;
+index_t index;
+char *ptr;
 index_t r;
 FILE *file;
 if(vector==NULL) return ;
 file=fopen(csv_filename,"w");
 if(file==NULL) return ;
+//code to write header
+if(header==NULL)
+{
+fputc('\n',file);
+}
+else
+{
+header_size=mlfw_row_vec_string_get_size(header);
+for(index=0;index<header_size;index++)
+{
+mlfw_row_vec_string_get(header,index,&ptr);
+if(ptr!=NULL)
+{
+fputs(ptr,file);
+free(ptr);	//very very very important
+}
+if(index<header_size-1) fputc(',',file);
+else fputc('\n',file);
+}
+}
+//code to write data
 for(r=0;r<vector->size;r++)
 {
 fprintf(file,"%lf",vector->data[r]);
@@ -255,11 +279,35 @@ return mean=sum/vector->size;
 }
 void mlfw_row_vec_double_to_csv(mlfw_row_vec_double *vector,char *csv_filename,mlfw_row_vec_string *header)
 {
+index_t index;
+dimension_t header_size;
+char *ptr;
 index_t r;
 FILE *file;
 if(vector==NULL) return ;
 file=fopen(csv_filename,"w");
 if(file==NULL) return ;
+//code to write header
+if(header==NULL)
+{
+fputc('\n',file);
+}
+else
+{
+header_size=mlfw_row_vec_string_get_size(header);
+for(index=0;index<header_size;index++)
+{
+mlfw_row_vec_string_get(header,index,&ptr);
+if(ptr!=NULL)
+{
+fputs(ptr,file);
+free(ptr);
+}
+if(index<header_size-1) fputc(',',file);
+else fputc('\n',file);
+}
+}
+//code to write data
 for(r=0;r<vector->size;r++)
 {
 fprintf(file,"%lf",vector->data[r]);

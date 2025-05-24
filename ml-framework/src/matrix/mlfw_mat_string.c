@@ -132,12 +132,36 @@ return matrix;
 }
 void mlfw_mat_string_to_csv(mlfw_mat_string *matrix,const char *csv_file_name,mlfw_row_vec_string *header)
 {
+index_t index;
+dimension_t header_size;
+char *ptr;
 FILE *file;
 index_t r,c;
 if(matrix==NULL) return ;
 if(csv_file_name==NULL) return;
 file=fopen(csv_file_name,"w");
 if(file==NULL) return ;
+//code to write header
+if(header==NULL)
+{
+fputc('\n',file);
+}
+else
+{
+header_size=mlfw_row_vec_string_get_size(header);
+for(index=0;index<header_size;index++)
+{
+mlfw_row_vec_string_get(header,index,&ptr);
+if(ptr!=NULL)
+{
+fputs(ptr,file);
+free(ptr);
+}
+if(index<header_size-1) fputc(',',file);
+else fputc('\n',file);
+}
+}
+//code to write data
 for(r=0;r<matrix->rows;r++)
 {
 for(c=0;c<matrix->columns;c++)

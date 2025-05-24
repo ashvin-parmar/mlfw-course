@@ -105,11 +105,35 @@ return vector->size;
 void mlfw_column_vec_string_to_csv(mlfw_column_vec_string *vector,char *csv_file_name,mlfw_row_vec_string *header)
 {
 index_t i;
+index_t index;
+dimension_t header_size;
+char *ptr;
 FILE *file;
 if(vector==NULL) return ;
 if(csv_file_name==NULL) return;
 file=fopen(csv_file_name,"w");
 if(file==NULL) return;
+//code to write header
+if(header==NULL)
+{
+fputc('\n',file);
+}
+else
+{
+header_size=mlfw_row_vec_string_get_size(header);
+for(index=0;index<header_size;index++)
+{
+mlfw_row_vec_string_get(header,index,&ptr);
+if(ptr!=NULL)
+{
+fputs(ptr,file);
+free(ptr);	//very very important
+}
+if(index<header_size-1) fputc(',',file);
+else fputc('\n',file);
+}
+}
+//code to write data
 for(i=0;i<vector->size;i++)
 {
 if(vector->data[i])
@@ -282,11 +306,35 @@ return vector->size;
 void mlfw_row_vec_string_to_csv(mlfw_row_vec_string *vector,char *csv_file_name,mlfw_row_vec_string *header)
 {
 index_t i;
+index_t index;
+dimension_t header_size;
+char *ptr;
 FILE *file;
 if(vector==NULL) return ;
 if(csv_file_name==NULL) return;
 file=fopen(csv_file_name,"w");
 if(file==NULL) return;
+//code to write header
+if(header==NULL)
+{
+fputc('\n',file);
+}
+else
+{
+header_size=mlfw_row_vec_string_get_size(header);
+for(index=0;index<header_size;index++)
+{
+mlfw_row_vec_string_get(header,index,&ptr);
+if(ptr!=NULL)
+{
+fputs(ptr,file);
+free(ptr);		//very very important
+}
+if(index<header_size-1) fputc(',',file);
+else fputc('\n',file);
+}
+}
+//code to write data
 for(i=0;i<vector->size;i++)
 {
 if(vector->data[i])
