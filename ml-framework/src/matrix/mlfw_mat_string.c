@@ -58,6 +58,8 @@ matrix=NULL;
 }
 mlfw_mat_string * mlfw_mat_string_from_csv(const char *csv_file_name,mlfw_mat_string *matrix,mlfw_row_vec_string **header)
 {
+char header_string[1025];
+index_t header_index;
 index_t r,c;
 dimension_t rows,columns;
 char string[5001]; 
@@ -70,6 +72,49 @@ if(file==NULL)
 {
 return NULL;
 }
+//Read first line start here
+columns=0;
+while(1)
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m==',') columns++;
+if(m=='\n') break;
+}
+columns++;	//0 comma's -> 1 Columns, 4 Comma's Means 5 Columns
+*header=mlfw_row_vec_string_create_new(columns);
+if(*header==NULL)
+{
+fclose(file);
+return NULL;
+}
+rewind(file);
+index=0;
+header_index=0;
+while(1)
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m==',')
+{
+header_string[index]='\0';
+mlfw_row_vec_string_set(*header,header_index,header_string);
+header_index++;
+index=0;
+continue;
+}
+if(m=='\n')
+{
+header_string[index]='\0';
+mlfw_row_vec_string_set(*header,header_index,header_string);
+break;
+}
+header_string[index]=m;
+index++;
+}
+//Read first line ends here
 rows=0;
 columns=0;
 while(1)
@@ -87,6 +132,8 @@ matrix=(mlfw_mat_string *)mlfw_mat_string_create_new(rows,columns);
 if(matrix==NULL)
 {
 fclose(file);
+mlfw_row_vec_string_destroy(*header);
+*header=NULL;
 return NULL;
 }
 }
@@ -95,6 +142,8 @@ else
 if(matrix->rows!=rows || matrix->columns!=columns)
 {
 fclose(file);
+mlfw_row_vec_string_destroy(*header);		//Destroy header before returning NULL
+*header=NULL;
 return NULL;
 }
 }
@@ -102,6 +151,14 @@ rewind(file);
 r=0;
 c=0;
 index=0;
+while(1)		//Skip first line
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m=='\n') break;
+}
+//while(fgetc(file)!='\n' && !feof(file));
 while(1)
 {
 m=fgetc(file);
