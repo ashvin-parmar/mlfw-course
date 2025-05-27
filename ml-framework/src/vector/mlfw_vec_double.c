@@ -154,6 +154,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file)) break;
+if(m=='\r') continue;
 if(m==',') size++;
 }
 size++;
@@ -181,6 +182,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file)) break;
+if(m=='\r') continue;
 if(m==',' || m=='\n') 
 {
 double_string[i]='\0';
@@ -333,6 +335,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file)) break;
+if(m=='\r') continue;
 if(m==',') size++;
 }
 size++;
@@ -360,6 +363,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file)) break;
+if(m=='\r') continue;
 if(m==',' || m=='\n') 
 {
 double_string[i]='\0';

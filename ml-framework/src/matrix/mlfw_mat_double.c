@@ -90,6 +90,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file) || m=='\n') break;
+if(m=='\r') continue;
 if(m==',') columns++; 
 }
 columns++;	//1 Columns=0 comma's       4 Columns = 3 Comma's
@@ -126,6 +127,7 @@ while(1)		//Continue reading from second line
 {
 m=fgetc(file);
 if(feof(file)) break;
+if(m=='\r') continue;
 if(rows==0 && m==',') columns++;
 if(m=='\n') rows++;
 }
@@ -167,7 +169,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file)) break;
-if(m=='\r') continue;
+if(m=='\r') continue;		//Skip/Ignore: '\r'
 if(m==',' || m=='\n')
 {
 double_string[index]='\0';

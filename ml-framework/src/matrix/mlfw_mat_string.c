@@ -76,6 +76,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file)) break;
+if(m=='\r') continue;
 if(rows==0 && m==',') columns++;
 if(m=='\n') rows++;
 }
@@ -105,6 +106,7 @@ while(1)
 {
 m=fgetc(file);
 if(feof(file)) break;
+if(m=='\r') continue;
 if(m==',' || m=='\n')
 {
 string[index]='\0';
