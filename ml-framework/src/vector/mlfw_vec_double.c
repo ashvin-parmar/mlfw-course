@@ -139,6 +139,10 @@ fclose(file);
 }
 mlfw_column_vec_double * mlfw_column_vec_double_from_csv(char *csv_filename,mlfw_column_vec_double *vector,mlfw_row_vec_string **header)
 {
+char header_string[1025];
+index_t header_index;
+index_t index;
+dimension_t columns;
 dimension_t size;
 FILE *file;
 char m;
@@ -149,6 +153,49 @@ index_t j;
 if(csv_filename==NULL) return NULL;
 file=fopen(csv_filename,"r");
 if(file==NULL) return NULL;
+//Read first line start here
+columns=0;
+while(1)
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m==',') columns++;
+if(m=='\n') break;
+}
+columns++;	//0 comma's -> 1 Columns, 4 Comma's Means 5 Columns
+*header=mlfw_row_vec_string_create_new(columns);
+if(*header==NULL)
+{
+fclose(file);
+return NULL;
+}
+rewind(file);
+index=0;
+header_index=0;
+while(1)
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m==',')
+{
+header_string[index]='\0';
+mlfw_row_vec_string_set(*header,header_index,header_string);
+header_index++;
+index=0;
+continue;
+}
+if(m=='\n')
+{
+header_string[index]='\0';
+mlfw_row_vec_string_set(*header,header_index,header_string);
+break;
+}
+header_string[index]=m;
+index++;
+}
+//Read first line ends here
 size=0;
 while(1)
 {
@@ -164,6 +211,8 @@ vector=mlfw_column_vec_double_create_new(size);
 if(vector==NULL) 
 {
 fclose(file);
+mlfw_row_vec_string_destroy(*header);
+*header=NULL;
 return NULL;
 }
 }
@@ -172,10 +221,19 @@ else
 if(vector->size!=size)
 {
 fclose(file);
+mlfw_row_vec_string_destroy(*header);
+*header=NULL;
 return NULL;
 }
 }
 rewind(file);
+while(1)		//Skip first line
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m=='\n') break;
+}
 i=0;
 j=0;
 while(1)
@@ -320,6 +378,10 @@ fclose(file);
 }
 mlfw_row_vec_double * mlfw_row_vec_double_from_csv(char *csv_filename,mlfw_row_vec_double *vector,mlfw_row_vec_string **header)
 {
+char header_string[1025];
+index_t header_index;
+index_t index;
+dimension_t columns;
 dimension_t size;
 FILE *file;
 char m;
@@ -330,6 +392,49 @@ index_t j;
 if(csv_filename==NULL) return NULL;
 file=fopen(csv_filename,"r");
 if(file==NULL) return NULL;
+//Read first line start here
+columns=0;
+while(1)
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m==',') columns++;
+if(m=='\n') break;
+}
+columns++;	//0 comma's -> 1 Columns, 4 Comma's Means 5 Columns
+*header=mlfw_row_vec_string_create_new(columns);
+if(*header==NULL)
+{
+fclose(file);
+return NULL;
+}
+rewind(file);
+index=0;
+header_index=0;
+while(1)
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m==',')
+{
+header_string[index]='\0';
+mlfw_row_vec_string_set(*header,header_index,header_string);
+header_index++;
+index=0;
+continue;
+}
+if(m=='\n')
+{
+header_string[index]='\0';
+mlfw_row_vec_string_set(*header,header_index,header_string);
+break;
+}
+header_string[index]=m;
+index++;
+}
+//Read first line ends here
 size=0;
 while(1)
 {
@@ -345,6 +450,8 @@ vector=mlfw_row_vec_double_create_new(size);
 if(vector==NULL) 
 {
 fclose(file);
+mlfw_row_vec_string_destroy(*header);
+*header=NULL;
 return NULL;
 }
 }
@@ -353,10 +460,19 @@ else
 if(vector->size!=size) 
 {
 fclose(file);
+mlfw_row_vec_string_destroy(*header);
+*header=NULL;
 return NULL;
 }
 }
 rewind(file);
+while(1)		//Skip first line
+{
+m=fgetc(file);
+if(feof(file)) break;
+if(m=='\r') continue;
+if(m=='\n') break;
+}
 i=0;
 j=0;
 while(1)
