@@ -1,13 +1,16 @@
 #include<mlfw_scale.h>
 #include<mlfw_matrix.h>
+#include<mlfw_vector.h>
 #include<stdio.h>
 #include<stdlib.h>
 int main(int argc,char *argv[])
 {
 mlfw_mat_double *matrix;
+mlfw_row_vec_string *header;
 dimension_t matrix_rows,matrix_columns;
 mlfw_mat_double *scaled_matrix;
 mlfw_mat_double *min_max_matrix;
+mlfw_row_vec_string *min_max_header;
 
 char *input_file;
 char *output_file;
@@ -24,31 +27,36 @@ from_column_index=atoi(argv[3]);
 to_column_index=atoi(argv[4]);
 min_max_file=argv[5];
 
-matrix=mlfw_mat_double_from_csv(input_file);
+matrix=mlfw_mat_double_from_csv(input_file,NULL,&header);
 if(matrix==NULL)
 {
 printf("1 Low on memory\n");
 return 0;
 }
 mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
-min_max_matrix=mlfw_mat_double_from_csv(min_max_file);
+min_max_matrix=mlfw_mat_double_from_csv(min_max_file,NULL,&min_max_header);
 if(min_max_matrix==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(matrix);
+mlfw_row_vec_string_destroy(header);
 return 0;
 }
-scaled_matrix=mlfw_scale_double_with_given_min_max(matrix,0,from_column_index,matrix_rows-1,to_column_index,min_max_matrix);
+scaled_matrix=mlfw_scale_double_with_given_min_max(matrix,0,from_column_index,matrix_rows-1,to_column_index,min_max_matrix,NULL);
 if(scaled_matrix==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(matrix);
+mlfw_row_vec_string_destroy(header);
 mlfw_mat_double_destroy(min_max_matrix);
+mlfw_row_vec_string_destroy(min_max_header);
 return 0;
 }
-mlfw_mat_double_to_csv(scaled_matrix,output_file);
+mlfw_mat_double_to_csv(scaled_matrix,output_file,header);
 mlfw_mat_double_destroy(matrix);
+mlfw_row_vec_string_destroy(header);
 mlfw_mat_double_destroy(min_max_matrix);
+mlfw_row_vec_string_destroy(min_max_header);
 mlfw_mat_double_destroy(scaled_matrix);
 return 0;
 }

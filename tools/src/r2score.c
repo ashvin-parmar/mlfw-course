@@ -6,6 +6,8 @@
 void score_it(char *filename)
 {
 mlfw_mat_double *dataset;
+mlfw_row_vec_string *dataset_header;
+
 dimension_t dataset_rows,dataset_columns;
 mlfw_column_vec_double *A;
 mlfw_column_vec_double *P;
@@ -27,53 +29,58 @@ printf("No file provided\n");
 return ;
 }
 
-dataset=mlfw_mat_double_from_csv(filename);
+dataset=mlfw_mat_double_from_csv(filename,NULL,&dataset_header);
 if(dataset==NULL)
 {
 printf("Unable to load dataset\n");
 return ;
 }
 mlfw_mat_double_get_dimension(dataset,&dataset_rows,&dataset_columns);
-A=mlfw_mat_double_create_column_vec(dataset,dataset_columns-2);	//second last column
+A=mlfw_mat_double_create_column_vec(dataset,dataset_columns-2,NULL);	//second last column
 if(A==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 return ;
 }
-P=mlfw_mat_double_create_column_vec(dataset,dataset_columns-1);	//last column
+P=mlfw_mat_double_create_column_vec(dataset,dataset_columns-1,NULL);	//last column
 if(P==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 return;
 }
 
-R=mlfw_subtract_double_column_vector(A,P);
+R=mlfw_subtract_double_column_vector(A,P,NULL);
 if(R==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(P);
 return ;
 }
-RT=mlfw_column_vec_double_transpose(R);
+RT=mlfw_column_vec_double_transpose(R,NULL);
 if(RT==NULL)
 {
 printf("Low memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(R);
 return;
 }
-RTR=mlfw_multiply_double_row_vector_with_column_vector(RT,R);
+RTR=mlfw_multiply_double_row_vector_with_column_vector(RT,R,NULL);
 if(RTR==NULL)
 {
 printf("Low memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(R);
@@ -83,11 +90,12 @@ return;
 SSR=mlfw_column_vec_double_get(RTR,0);
 
 mean_of_actuals=mlfw_column_vec_double_get_mean(A);
-M=mlfw_column_vec_double_create_new_filled(dataset_rows,mean_of_actuals);
+M=mlfw_column_vec_double_create_new_filled(dataset_rows,mean_of_actuals,NULL);
 if(M==NULL)
 {
 printf("Low memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(R);
@@ -95,11 +103,12 @@ mlfw_row_vec_double_destroy(RT);
 mlfw_column_vec_double_destroy(RTR);
 return;
 }
-AM=mlfw_subtract_double_column_vector(A,M);
+AM=mlfw_subtract_double_column_vector(A,M,NULL);
 if(AM==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(R);
@@ -108,11 +117,12 @@ mlfw_column_vec_double_destroy(RTR);
 mlfw_column_vec_double_destroy(M);
 return;
 }
-AMT=mlfw_column_vec_double_transpose(AM);
+AMT=mlfw_column_vec_double_transpose(AM,NULL);
 if(AMT==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(R);
@@ -122,11 +132,12 @@ mlfw_column_vec_double_destroy(M);
 mlfw_column_vec_double_destroy(AM);
 return;
 }
-AMTAM=mlfw_multiply_double_row_vector_with_column_vector(AMT,AM);
+AMTAM=mlfw_multiply_double_row_vector_with_column_vector(AMT,AM,NULL);
 if(AMTAM==NULL)
 {
 printf("Low on memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(R);
@@ -142,6 +153,7 @@ r2score=1-(SSR/SST);
 printf("Score of our tool is : %lf\n",r2score);
 
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(R);
