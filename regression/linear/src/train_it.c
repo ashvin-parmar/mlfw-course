@@ -23,7 +23,12 @@ double iteration_number;
 index_t history_index;
 index_t i,j;
 
+mlfw_row_vec_string *history_header;
+mlfw_row_vec_string *parameter_header;
+char title[16];
+int x;
 mlfw_mat_double *dataset; //For CSV File to Dataset matrix conversion
+mlfw_row_vec_string *dataset_header;
 dimension_t dataset_rows;
 dimension_t dataset_columns;
 
@@ -50,7 +55,7 @@ mlfw_column_vec_double *um;
 uint64_t k;
 double sum_of_squared_error_values; //Value inside ETE which is ordered(1*1) Matrix (Column vector) 
 double final_error_value; //Finally divide sum_of_squared_error with number of matrix 
-dataset=mlfw_mat_double_from_csv(DATASET_FILE_NAME);
+dataset=mlfw_mat_double_from_csv(DATASET_FILE_NAME,NULL,&dataset_header);
 if(dataset==NULL)
 {
 printf("Unable to load dataset from %s File\n",DATASET_FILE_NAME);
@@ -64,6 +69,7 @@ if(I==NULL)
 {
 printf("Unable to Train, Low on memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 return ;
 }
 mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_rows-1,dataset_columns-2);
@@ -71,31 +77,34 @@ mlfw_mat_double_copy(I,dataset,0,1,0,0,dataset_rows-1,dataset_columns-2);
 mlfw_mat_double_fill(I,0,0,dataset_rows-1,0,1.0);
 
 
-IT=mlfw_mat_double_transpose(I);
+IT=mlfw_mat_double_transpose(I,NULL);
 if(IT==NULL)
 {
 printf("Low memory\n");
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(I);
 return ;
 }
 
 
-A=mlfw_mat_double_create_column_vec(dataset,dataset_columns-1);
+A=mlfw_mat_double_create_column_vec(dataset,dataset_columns-1,NULL);
 if(A==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 return ;
 }
-m=mlfw_column_vec_double_create_new_filled(I_columns,0.0);
+m=mlfw_column_vec_double_create_new_filled(I_columns,0.0,NULL);
 if(m==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 return ;
@@ -105,12 +114,13 @@ history_rows=HISTORY_FILE_SIZE;
 history_columns=I_columns+2;	//1 for error values at index 1
 				//2 for iteration values at index 0
 
-history=mlfw_mat_double_create_new_filled(history_rows,history_columns,0.0);
+history=mlfw_mat_double_create_new_filled(history_rows,history_columns,0.0,NULL);
 if(history==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
@@ -119,27 +129,36 @@ return ;
 graph_file=fopen(GRAPH_FILE_NAME,"w");
 history_index=0;
 k=0;
-while(STOP_FLAG==0)
+P=NULL;
+E=NULL;
+ET=NULL;
+ETE=NULL;
+ITE=NULL;
+TMP=NULL;
+um=NULL;
+while(STOP_FLAG==0)		//loop starts
 {
 if(k==NUMBER_OF_ITERATION) break;	//Termination from loop
-P=mlfw_multiply_double_matrix_with_column_vector(I,m);
+P=mlfw_multiply_double_matrix_with_column_vector(I,m,P);
 if(P==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 mlfw_mat_double_destroy(history);
 return ;
 }
-E=mlfw_subtract_double_column_vector(P,A);
+E=mlfw_subtract_double_column_vector(P,A,E);
 if(E==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
@@ -147,12 +166,13 @@ mlfw_mat_double_destroy(history);
 mlfw_column_vec_double_destroy(P);
 return ;
 }
-ET=mlfw_column_vec_double_transpose(E);
+ET=mlfw_column_vec_double_transpose(E,ET);
 if(ET==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
@@ -161,12 +181,13 @@ mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(E);
 return;
 }
-ETE=mlfw_multiply_double_row_vector_with_column_vector(ET,E);
+ETE=mlfw_multiply_double_row_vector_with_column_vector(ET,E,ETE);
 if(ETE==NULL)
 {
 printf("Unable to Train, Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
@@ -208,12 +229,13 @@ history_index++;
 //logic to store error values, iteration and thier respective m vector values to history matrix ends
 
 //Now, Here are logic to update 'Mi' and 'Ci' to minimizes error values of (Yi=MiXi+Ci)
-ITE=mlfw_multiply_double_matrix_with_column_vector(IT,E);
+ITE=mlfw_multiply_double_matrix_with_column_vector(IT,E,ITE);
 if(ITE==NULL)
 {
 printf("Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
@@ -225,12 +247,13 @@ mlfw_column_vec_double_destroy(ETE);
 return ;
 }
 						//Learning rate
-TMP=mlfw_multiply_double_scalar_with_column_vector((LEARNING_RATE)*(1.0/I_rows),ITE);
+TMP=mlfw_multiply_double_scalar_with_column_vector((LEARNING_RATE)*(1.0/I_rows),ITE,TMP);
 if(TMP==NULL)
 {
 printf("Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
@@ -243,12 +266,13 @@ mlfw_column_vec_double_destroy(ITE);
 return;
 }
 
-um=mlfw_subtract_double_column_vector(m,TMP);
+um=mlfw_subtract_double_column_vector(m,TMP,NULL);
 if(um==NULL)
 {
 printf("Low memory\n");
 mlfw_mat_double_destroy(I);
 mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
 mlfw_mat_double_destroy(IT);
 mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
@@ -264,25 +288,77 @@ return;
 mlfw_column_vec_double_destroy(m);		//old m vector released
 m=um; 	//now, m is pointing to newly created vector with updated values
 
+//mlfw_column_vec_double_destroy(P);
+//mlfw_column_vec_double_destroy(E);
+//mlfw_row_vec_double_destroy(ET);
+//mlfw_column_vec_double_destroy(ETE);
+//mlfw_column_vec_double_destroy(ITE);
+//mlfw_column_vec_double_destroy(TMP);
+++k;
+}
+fclose(graph_file);
+//Store history matrix values in a file
+
+history_header=mlfw_row_vec_string_create_new(history_columns);
+if(history_header==NULL)
+{
+mlfw_mat_double_destroy(I);
+mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
+mlfw_mat_double_destroy(IT);
+mlfw_column_vec_double_destroy(A);
+mlfw_column_vec_double_destroy(m);
+mlfw_mat_double_destroy(history);
+return ;
+}
+mlfw_row_vec_string_set(history_header,0,"iteration_number");
+mlfw_row_vec_string_set(history_header,1,"error");
+j=mlfw_column_vec_double_get_size(m);
+for(i=0;i<j;i++)
+{
+sprintf(title,"theta(%d)",i);
+mlfw_row_vec_string_set(history_header,i+2,title);
+}
+parameter_header=mlfw_row_vec_string_create_new(j);
+if(parameter_header==NULL)
+{
+mlfw_mat_double_destroy(I);
+mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
+mlfw_mat_double_destroy(IT);
+mlfw_column_vec_double_destroy(A);
+mlfw_column_vec_double_destroy(m);
+mlfw_mat_double_destroy(history);
+mlfw_row_vec_string_destroy(history_header);
+return ;
+}
+for(i=0;i<j;i++)
+{
+sprintf(title,"theta(%d)",i);
+mlfw_row_vec_string_set(parameter_header,i,title);
+}
+
+mlfw_mat_double_to_csv(history,HISTORY_FILE_NAME,history_header);
+mlfw_column_vec_double_to_csv(m,PARAMETERS_FILE_NAME,parameter_header);
+//Releases memory
+mlfw_mat_double_destroy(I);
+mlfw_mat_double_destroy(dataset);
+mlfw_row_vec_string_destroy(dataset_header);
+mlfw_mat_double_destroy(IT);
+mlfw_column_vec_double_destroy(A);
+mlfw_column_vec_double_destroy(m);
+mlfw_mat_double_destroy(history);
+
 mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(E);
 mlfw_row_vec_double_destroy(ET);
 mlfw_column_vec_double_destroy(ETE);
 mlfw_column_vec_double_destroy(ITE);
 mlfw_column_vec_double_destroy(TMP);
-++k;
-}
-fclose(graph_file);
-//Store history matrix values in a file
-mlfw_mat_double_to_csv(history,HISTORY_FILE_NAME);
-mlfw_column_vec_double_to_csv(m,PARAMETERS_FILE_NAME);
-//Releases memory
-mlfw_mat_double_destroy(I);
-mlfw_mat_double_destroy(dataset);
-mlfw_mat_double_destroy(IT);
-mlfw_column_vec_double_destroy(A);
-mlfw_column_vec_double_destroy(m);
-mlfw_mat_double_destroy(history);
+//mlfw_column_vec_double_destroy(um);		//Because matrix m already released
+
+mlfw_row_vec_string_destroy(history_header);
+mlfw_row_vec_string_destroy(parameter_header);
 }
 void * thread_function(void *p)
 {
