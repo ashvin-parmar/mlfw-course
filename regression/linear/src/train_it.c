@@ -139,7 +139,7 @@ um=NULL;
 while(STOP_FLAG==0)		//loop starts
 {
 if(k==NUMBER_OF_ITERATION) break;	//Termination from loop
-P=mlfw_multiply_double_matrix_with_column_vector(I,m,P);
+P=mlfw_multiply_double_matrix_with_column_vector(I,m,NULL);
 if(P==NULL)
 {
 printf("Unable to Train, Low memory\n");
@@ -152,7 +152,7 @@ mlfw_column_vec_double_destroy(m);
 mlfw_mat_double_destroy(history);
 return ;
 }
-E=mlfw_subtract_double_column_vector(P,A,E);
+E=mlfw_subtract_double_column_vector(P,A,NULL);
 if(E==NULL)
 {
 printf("Unable to Train, Low memory\n");
@@ -166,7 +166,7 @@ mlfw_mat_double_destroy(history);
 mlfw_column_vec_double_destroy(P);
 return ;
 }
-ET=mlfw_column_vec_double_transpose(E,ET);
+ET=mlfw_column_vec_double_transpose(E,NULL);
 if(ET==NULL)
 {
 printf("Unable to Train, Low memory\n");
@@ -181,7 +181,7 @@ mlfw_column_vec_double_destroy(P);
 mlfw_column_vec_double_destroy(E);
 return;
 }
-ETE=mlfw_multiply_double_row_vector_with_column_vector(ET,E,ETE);
+ETE=mlfw_multiply_double_row_vector_with_column_vector(ET,E,NULL);
 if(ETE==NULL)
 {
 printf("Unable to Train, Low memory\n");
@@ -229,7 +229,7 @@ history_index++;
 //logic to store error values, iteration and thier respective m vector values to history matrix ends
 
 //Now, Here are logic to update 'Mi' and 'Ci' to minimizes error values of (Yi=MiXi+Ci)
-ITE=mlfw_multiply_double_matrix_with_column_vector(IT,E,ITE);
+ITE=mlfw_multiply_double_matrix_with_column_vector(IT,E,NULL);
 if(ITE==NULL)
 {
 printf("Low memory\n");
@@ -247,7 +247,7 @@ mlfw_column_vec_double_destroy(ETE);
 return ;
 }
 						//Learning rate
-TMP=mlfw_multiply_double_scalar_with_column_vector((LEARNING_RATE)*(1.0/I_rows),ITE,TMP);
+TMP=mlfw_multiply_double_scalar_with_column_vector((LEARNING_RATE)*(1.0/I_rows),ITE,NULL);
 if(TMP==NULL)
 {
 printf("Low memory\n");
@@ -288,12 +288,12 @@ return;
 mlfw_column_vec_double_destroy(m);		//old m vector released
 m=um; 	//now, m is pointing to newly created vector with updated values
 
-//mlfw_column_vec_double_destroy(P);
-//mlfw_column_vec_double_destroy(E);
-//mlfw_row_vec_double_destroy(ET);
-//mlfw_column_vec_double_destroy(ETE);
-//mlfw_column_vec_double_destroy(ITE);
-//mlfw_column_vec_double_destroy(TMP);
+mlfw_column_vec_double_destroy(P);
+mlfw_column_vec_double_destroy(E);
+mlfw_row_vec_double_destroy(ET);
+mlfw_column_vec_double_destroy(ETE);
+mlfw_column_vec_double_destroy(ITE);
+mlfw_column_vec_double_destroy(TMP);
 ++k;
 }
 fclose(graph_file);
@@ -345,12 +345,12 @@ mlfw_column_vec_double_destroy(A);
 mlfw_column_vec_double_destroy(m);
 mlfw_mat_double_destroy(history);
 
-mlfw_column_vec_double_destroy(P);
-mlfw_column_vec_double_destroy(E);
-mlfw_row_vec_double_destroy(ET);
-mlfw_column_vec_double_destroy(ETE);
-mlfw_column_vec_double_destroy(ITE);
-mlfw_column_vec_double_destroy(TMP);
+//mlfw_column_vec_double_destroy(P);
+//mlfw_column_vec_double_destroy(E);
+//mlfw_row_vec_double_destroy(ET);
+//mlfw_column_vec_double_destroy(ETE);
+//mlfw_column_vec_double_destroy(ITE);
+//mlfw_column_vec_double_destroy(TMP);
 //mlfw_column_vec_double_destroy(um);		//Because matrix m already released
 
 mlfw_row_vec_string_destroy(history_header);

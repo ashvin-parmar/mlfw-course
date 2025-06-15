@@ -1,0 +1,3 @@
+train_it.c Old code timing: => 03:13:28 minutes:seconds:pals
+optimized_train_it.c --> 03:14:81
+train_it.c New code [Non-optimized]: 03:16:34
