@@ -6,6 +6,6 @@
 #define dimension_t uint32_t
 #define index_t uint32_t
 #endif
-
+#include<mlfw_vector.h>
 #include<encoder/mlfw_data_encoder.h>
 #endif

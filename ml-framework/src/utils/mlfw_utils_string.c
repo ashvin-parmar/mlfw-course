@@ -1,4 +1,5 @@
 #include<mlfw_utils.h>
+#include<stdio.h>
 int strcmp_case_insensitive(const char *left,const char *right)
 {
 //This function should return 0 if both are same
