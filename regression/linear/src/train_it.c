@@ -314,11 +314,6 @@ return ;
 mlfw_row_vec_string_set(history_header,0,"iteration_number");
 mlfw_row_vec_string_set(history_header,1,"error");
 j=mlfw_column_vec_double_get_size(m);
-for(i=0;i<j;i++)
-{
-sprintf(title,"theta(%d)",i);
-mlfw_row_vec_string_set(history_header,i+2,title);
-}
 parameter_header=mlfw_row_vec_string_create_new(j);
 if(parameter_header==NULL)
 {
@@ -332,9 +327,10 @@ mlfw_mat_double_destroy(history);
 mlfw_row_vec_string_destroy(history_header);
 return ;
 }
-for(i=0;i<j;i++)
+for(i=0;i<j;i++)		//Writing header at the same time in both 
 {
 sprintf(title,"theta(%d)",i);
+mlfw_row_vec_string_set(history_header,i+2,title);
 mlfw_row_vec_string_set(parameter_header,i,title);
 }
 
