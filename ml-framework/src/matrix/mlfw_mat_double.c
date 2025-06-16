@@ -77,7 +77,7 @@ char m;
 char double_string[1025];
 char header_string[1025];
 FILE *file;
-
+if(csv_file_name==NULL || header==NULL) return NULL;
 file=fopen(csv_file_name,"r");
 if(file==NULL)
 {
@@ -132,6 +132,13 @@ if(rows==0 && m==',') columns++;
 if(m=='\n') rows++;
 }
 columns++;
+if(columns!=mlfw_row_vec_string_get_size(*header))
+{
+mlfw_row_vec_string_destroy(*header);
+*header=NULL;
+fclose(file);
+return NULL;
+}
 if(matrix==NULL)
 {
 matrix=(mlfw_mat_double *)mlfw_mat_double_create_new(rows,columns);
@@ -300,17 +307,12 @@ char *ptr;
 index_t r,c;
 char seperator;
 FILE *file;
-if(matrix==NULL || csv_file_name==NULL) return;
+if(matrix==NULL || csv_file_name==NULL || header==NULL) return;
+header_size=mlfw_row_vec_string_get_size(header);
+if(header_size!=matrix->columns) return ;
 file=fopen(csv_file_name,"w");
 if(file==NULL) return;
 //code to store header
-if(header==NULL)
-{
-fputc('\n',file);
-}
-else
-{
-header_size=mlfw_row_vec_string_get_size(header);
 for(index=0;index<header_size;index++)
 {
 mlfw_row_vec_string_get(header,index,&ptr);
@@ -321,7 +323,6 @@ free(ptr);
 }
 if(index<header_size-1) fputc(',',file);
 else fputc('\n',file);
-}
 }
 //code to store data
 for(r=0;r<matrix->rows;r++)

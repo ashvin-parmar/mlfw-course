@@ -105,17 +105,12 @@ index_t index;
 char *ptr;
 index_t r;
 FILE *file;
-if(vector==NULL) return ;
+if(vector==NULL || csv_filename==NULL || header==NULL) return ;
+header_size=mlfw_row_vec_string_get_size(header);
+if(header_size!=vector->size) return ;
 file=fopen(csv_filename,"w");
 if(file==NULL) return ;
 //code to write header
-if(header==NULL)
-{
-fputc('\n',file);
-}
-else
-{
-header_size=mlfw_row_vec_string_get_size(header);
 for(index=0;index<header_size;index++)
 {
 mlfw_row_vec_string_get(header,index,&ptr);
@@ -126,7 +121,6 @@ free(ptr);	//very very very important
 }
 if(index<header_size-1) fputc(',',file);
 else fputc('\n',file);
-}
 }
 //code to write data
 for(r=0;r<vector->size;r++)
@@ -150,7 +144,7 @@ char double_string[1025];
 double value;
 index_t i;
 index_t j;
-if(csv_filename==NULL) return NULL;
+if(csv_filename==NULL || header==NULL) return NULL;
 file=fopen(csv_filename,"r");
 if(file==NULL) return NULL;
 //Read first line start here
@@ -164,6 +158,12 @@ if(m==',') columns++;
 if(m=='\n') break;
 }
 columns++;	//0 comma's -> 1 Columns, 4 Comma's Means 5 Columns
+if(columns!=1)
+{
+fclose(file);
+*header=NULL;
+return NULL;
+}
 *header=mlfw_row_vec_string_create_new(columns);
 if(*header==NULL)
 {
@@ -344,17 +344,12 @@ dimension_t header_size;
 char *ptr;
 index_t r;
 FILE *file;
-if(vector==NULL) return ;
+if(vector==NULL || csv_filename==NULL || header==NULL) return ;
+header_size=mlfw_row_vec_string_get_size(header);
+if(header_size!=vector->size) return;
 file=fopen(csv_filename,"w");
 if(file==NULL) return ;
 //code to write header
-if(header==NULL)
-{
-fputc('\n',file);
-}
-else
-{
-header_size=mlfw_row_vec_string_get_size(header);
 for(index=0;index<header_size;index++)
 {
 mlfw_row_vec_string_get(header,index,&ptr);
@@ -365,7 +360,6 @@ free(ptr);
 }
 if(index<header_size-1) fputc(',',file);
 else fputc('\n',file);
-}
 }
 //code to write data
 for(r=0;r<vector->size;r++)
@@ -389,7 +383,7 @@ char double_string[1025];
 double value;
 index_t i;
 index_t j;
-if(csv_filename==NULL) return NULL;
+if(csv_filename==NULL || header==NULL) return NULL;
 file=fopen(csv_filename,"r");
 if(file==NULL) return NULL;
 //Read first line start here
@@ -444,6 +438,13 @@ if(m=='\r') continue;
 if(m==',') size++;
 }
 size++;
+if(size!=mlfw_row_vec_string_get_size(*header))
+{
+mlfw_row_vec_string_destroy(*header);
+*header=NULL;
+fclose(file);
+return NULL;
+}
 if(vector==NULL)
 {
 vector=mlfw_row_vec_double_create_new(size);
