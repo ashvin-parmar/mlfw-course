@@ -11,7 +11,7 @@ dimension_t size,rows,columns;
 char *ptr;
 char *value;
 
-matrix=mlfw_mat_string_from_csv("IceCreamSales.csv",NULL,NULL);
+matrix=mlfw_mat_string_from_csv("IceCreamSales.csv",NULL,&header);
 if(matrix==NULL)
 {
 printf("Unable to create matrix\n");

@@ -1,6 +1,6 @@
 #include<mlfw_utils.h>
 #include<stdio.h>
-int strcmp_case_insensitive(const char *left,const char *right)
+int mlfw_strcmp_case_insensitive(const char *left,const char *right)
 {
 //This function should return 0 if both are same
 //If the left operand is greater than the right one then return +ve
@@ -20,4 +20,16 @@ left++;
 right++;
 }
 return (*left)-(*right);
+}
+void mlfw_uint32_to_binary(uint32_t number,char *binary_string)
+{
+int i,j=0;
+int bit;
+for(i=31,j=0;i>=0;i--,j++)
+{
+bit=(number>>i) & 1;
+if(bit==0) binary_string[j]='0';
+else 	   binary_string[j]='1';
+}
+binary_string[j]='\0';
 }

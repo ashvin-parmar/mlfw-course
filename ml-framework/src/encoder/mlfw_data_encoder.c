@@ -55,7 +55,7 @@ mlfw_row_vec_string_destroy(header);
 free(encode_columns);
 return;
 }
-if(strcmp_case_insensitive(ptr1,ptr2)==0)
+if(mlfw_strcmp_case_insensitive(ptr1,ptr2)==0)
 {
 found=1;
 }
