@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<time.h>
+#include<math.h>
 typedef struct __mlfw_mat_double
 {
 double **data;
@@ -456,3 +457,65 @@ maximum=matrix->data[r][c];
 }
 return maximum;
 }
+double mlfw_mat_double_get_mean(mlfw_mat_double *matrix,index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)
+{
+double mean;
+dimension_t elements_count;
+double sum;
+index_t r,c;
+if(matrix==NULL) return 0.0;
+if(start_row_index<0) start_row_index=0;
+if(end_row_index>=matrix->rows) end_row_index=matrix->rows-1;
+if(start_column_index<0) start_column_index=0;
+if(end_column_index>=matrix->columns) end_column_index=matrix->columns-1;
+if(start_row_index>end_row_index) return 0.0;
+if(start_column_index>end_column_index) return 0.0;
+
+sum=0.0;
+elements_count=0;
+for(r=start_row_index;r<=end_row_index;r++)
+{
+for(c=start_column_index;c<=end_column_index;c++)
+{
+sum=sum+matrix->data[r][c];
+++elements_count;
+}
+}
+mean=sum/elements_count;
+return mean;
+}
+
+double mlfw_mat_double_get_standard_deviation(mlfw_mat_double *matrix,index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)
+{
+double standard_deviation;
+double sum;
+double square;
+double mean;
+double diff;
+dimension_t elements_count;
+index_t r,c;
+if(matrix==NULL) return 0.0;
+if(start_row_index<0) start_row_index=0;
+if(end_row_index>=matrix->rows) end_row_index=matrix->rows-1;
+if(start_column_index<0) start_column_index=0;
+if(end_column_index>=matrix->columns) end_column_index=matrix->columns-1;
+if(start_row_index>end_row_index) return 0.0;
+if(start_column_index>end_column_index) return 0.0;
+mean=mlfw_mat_double_get_mean(matrix,start_row_index,end_row_index,start_column_index,end_column_index);
+elements_count=0;
+sum=0.0;
+for(r=start_row_index;r<=end_row_index;r++)
+{
+for(c=start_column_index;c<=end_column_index;c++)
+{
+diff=matrix->data[r][c]-mean;
+square=diff*diff;
+sum=sum+square;
+++elements_count;
+}
+}
+mean=sum/elements_count;
+standard_deviation=sqrt(mean);
+return standard_deviation;
+}
+
