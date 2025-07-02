@@ -76,9 +76,9 @@ free(max);
 mlfw_mat_double_destroy(new_matrix);
 return NULL;
 }
-for(i=0;i<new_matrix_columns;i++)
+for(i=start_column_index;i<end_column_index;i++)
 {
-fprintf(file,"%s%d","column",i);
+fprintf(file,"column_%d",i);
 if(i==new_matrix_columns-1) fputc('\n',file);
 else fputc(',',file);
 }
@@ -223,9 +223,9 @@ free(standard_deviation);
 mlfw_mat_double_destroy(new_matrix);
 return NULL;
 }
-for(i=0;i<new_matrix_columns;i++)
+for(i=start_column_index;i<end_column_index;i++)
 {
-fprintf(file,"%s%d","column",i);
+fprintf(file,"column_%d",i);
 if(i==new_matrix_columns-1) fputc('\n',file);
 else fputc(',',file);
 }
@@ -259,24 +259,16 @@ double mean;
 double standard_deviation;
 index_t r,c;
 index_t new_matrix_r,new_matrix_c;
-printf("0\n");
 if(matrix==NULL || mean_standard_deviation==NULL) return NULL;
-printf("1\n");
 mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
 mlfw_mat_double_get_dimension(mean_standard_deviation,&mean_standard_deviation_rows,&mean_standard_deviation_columns);
-printf("Rows: %d\n",mean_standard_deviation_rows);
 if(mean_standard_deviation_rows!=2) return NULL;
-printf("1\n");
 if(start_row_index<0 || end_row_index>=matrix_rows) return NULL;
-printf("1\n");
 if(start_column_index<0 || end_column_index>=matrix_columns) return NULL;
-printf("1\n");
 if(start_row_index>end_row_index || start_column_index>end_column_index) return NULL;
-printf("1\n");
 new_matrix_rows=end_row_index-start_row_index+1;
 new_matrix_columns=end_column_index-start_column_index+1;
 if(mean_standard_deviation_columns!=new_matrix_columns) return NULL;
-printf("1\n");
 if(new_matrix==NULL)
 {
 new_matrix=mlfw_mat_double_create_new(new_matrix_rows,new_matrix_columns);
@@ -287,7 +279,6 @@ else
 mlfw_mat_double_get_dimension(new_matrix,&new_matrix_rows_known,&new_matrix_columns_known);
 if(new_matrix_rows_known!=new_matrix_rows || new_matrix_columns_known!=new_matrix_columns) return NULL;
 }
-printf("come here\n");
 r=start_row_index;
 for(new_matrix_r=0;new_matrix_r<new_matrix_rows;new_matrix_r++)
 {
