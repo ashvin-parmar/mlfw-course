@@ -2,10 +2,9 @@
 #include<mlfw_scale.h>
 #include<stdio.h>
 #include<stdlib.h>
-
-mlfw_mat_double *mlfw_scale_double_min_max(mlfw_mat_double *matrix,index_t start_row_index,index_t start_column_index,index_t end_row_index,index_t end_column_index,char *min_max_file,mlfw_mat_double *new_matrix)
+#include<mlfw_utils.h>
+mlfw_mat_double *mlfw_scale_double_min_max(mlfw_mat_double *matrix,index_t start_row_index,index_t start_column_index,index_t end_row_index,index_t end_column_index,mlfw_mat_double **min_max_matrix,mlfw_mat_double *new_matrix)
 {
-FILE *file;
 double scaled_value;
 double value;
 dimension_t matrix_rows,matrix_columns;
@@ -16,7 +15,7 @@ double *min;
 index_t r,c;
 index_t i;
 index_t new_matrix_r,new_matrix_c;
-if(matrix==NULL) return NULL;
+if(matrix==NULL || min_max_matrix==NULL) return NULL;
 mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
 
 if(start_row_index<0 || end_row_index>=matrix_rows) return NULL;
@@ -34,16 +33,26 @@ else
 mlfw_mat_double_get_dimension(new_matrix,&new_matrix_rows_known,&new_matrix_columns_known);
 if(new_matrix_rows_known!=new_matrix_rows || new_matrix_columns_known!=new_matrix_columns) return NULL;
 }
+*min_max_matrix=mlfw_mat_double_create_new(2,new_matrix_columns);
+if(*min_max_matrix==NULL)
+{
+mlfw_mat_double_destroy(new_matrix);
+return NULL;
+}
 max=(double *)malloc(sizeof(double)*new_matrix_columns);
 if(max==NULL)
 {
 mlfw_mat_double_destroy(new_matrix);
+mlfw_mat_double_destroy(*min_max_matrix);
+*min_max_matrix=NULL;
 return NULL;
 }
 min=(double *)malloc(sizeof(double)*new_matrix_columns);
 if(min==NULL)
 {
 mlfw_mat_double_destroy(new_matrix);
+mlfw_mat_double_destroy(*min_max_matrix);
+*min_max_matrix=NULL;
 free(max);
 return NULL;
 }
@@ -68,33 +77,11 @@ mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
 ++r;
 }
 
-file=fopen(min_max_file,"w");
-if(file==NULL) 
-{
-free(min);
-free(max);
-mlfw_mat_double_destroy(new_matrix);
-return NULL;
-}
-for(i=start_column_index;i<end_column_index;i++)
-{
-fprintf(file,"column_%d",i);
-if(i==new_matrix_columns-1) fputc('\n',file);
-else fputc(',',file);
-}
 for(i=0;i<new_matrix_columns;i++)
 {
-fprintf(file,"%lf",min[i]);
-if(i==new_matrix_columns-1) fputc('\n',file);
-else fputc(',',file);
+mlfw_mat_double_set(*min_max_matrix,0,i,min[i]);
+mlfw_mat_double_set(*min_max_matrix,1,i,max[i]);
 }
-for(i=0;i<new_matrix_columns;i++)
-{
-fprintf(file,"%lf",max[i]);
-if(i==new_matrix_columns-1) fputc('\n',file);
-else fputc(',',file);
-}
-fclose(file);
 free(min);
 free(max);
 return new_matrix;
@@ -150,9 +137,8 @@ mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
 return new_matrix;
 }
 
-mlfw_mat_double *mlfw_scale_double_z_score(mlfw_mat_double *matrix,index_t start_row_index,index_t start_column_index,index_t end_row_index,index_t end_column_index,char *mean_standard_deviation,mlfw_mat_double *new_matrix)
+mlfw_mat_double *mlfw_scale_double_z_score(mlfw_mat_double *matrix,index_t start_row_index,index_t start_column_index,index_t end_row_index,index_t end_column_index,mlfw_mat_double **mean_standard_deviation_matrix,mlfw_mat_double *new_matrix)
 {
-FILE *file;
 double scaled_value;
 double value;
 dimension_t matrix_rows,matrix_columns;
@@ -163,7 +149,7 @@ double *standard_deviation;
 index_t r,c;
 index_t i;
 index_t new_matrix_r,new_matrix_c;
-if(matrix==NULL) return NULL;
+if(matrix==NULL || mean_standard_deviation_matrix==NULL) return NULL;
 mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
 
 if(start_row_index<0 || end_row_index>=matrix_rows) return NULL;
@@ -181,16 +167,26 @@ else
 mlfw_mat_double_get_dimension(new_matrix,&new_matrix_rows_known,&new_matrix_columns_known);
 if(new_matrix_rows_known!=new_matrix_rows || new_matrix_columns_known!=new_matrix_columns) return NULL;
 }
+*mean_standard_deviation_matrix=mlfw_mat_double_create_new(2,new_matrix_columns);
+if(*mean_standard_deviation_matrix==NULL)
+{
+mlfw_mat_double_destroy(new_matrix);
+return NULL;
+}
 mean=(double *)malloc(sizeof(double)*new_matrix_columns);
 if(mean==NULL)
 {
 mlfw_mat_double_destroy(new_matrix);
+mlfw_mat_double_destroy(*mean_standard_deviation_matrix);
+*mean_standard_deviation_matrix=NULL;
 return NULL;
 }
 standard_deviation=(double *)malloc(sizeof(double)*new_matrix_columns);
 if(standard_deviation==NULL)
 {
 mlfw_mat_double_destroy(new_matrix);
+mlfw_mat_double_destroy(*mean_standard_deviation_matrix);
+*mean_standard_deviation_matrix=NULL;
 free(mean);
 return NULL;
 }
@@ -215,33 +211,11 @@ mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
 ++r;
 }
 
-file=fopen(mean_standard_deviation,"w");
-if(file==NULL) 
-{
-free(mean);
-free(standard_deviation);
-mlfw_mat_double_destroy(new_matrix);
-return NULL;
-}
-for(i=start_column_index;i<end_column_index;i++)
-{
-fprintf(file,"column_%d",i);
-if(i==new_matrix_columns-1) fputc('\n',file);
-else fputc(',',file);
-}
 for(i=0;i<new_matrix_columns;i++)
 {
-fprintf(file,"%lf",mean[i]);
-if(i==new_matrix_columns-1) fputc('\n',file);
-else fputc(',',file);
+mlfw_mat_double_set(*mean_standard_deviation_matrix,0,i,mean[i]);
+mlfw_mat_double_set(*mean_standard_deviation_matrix,1,i,standard_deviation[i]);
 }
-for(i=0;i<new_matrix_columns;i++)
-{
-fprintf(file,"%lf",standard_deviation[i]);
-if(i==new_matrix_columns-1) fputc('\n',file);
-else fputc(',',file);
-}
-fclose(file);
 free(mean);
 free(standard_deviation);
 return new_matrix;
@@ -297,3 +271,158 @@ mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
 return new_matrix;
 }
 
+mlfw_mat_double *mlfw_scale_double(const char *dataset_file_name,mlfw_row_vec_string *columns_to_scale,const char *parameter_file_name,const char *algorithm_name)
+{
+mlfw_mat_double *matrix;
+dimension_t matrix_rows,matrix_columns;
+mlfw_row_vec_string *matrix_header;
+dimension_t matrix_header_size;
+dimension_t columns_to_scale_size;
+
+mlfw_mat_double *parameters_matrix;
+mlfw_mat_double *scaled_matrix;
+mlfw_mat_double *tmp_matrix;
+
+uint8_t algorithm_code=0;
+uint8_t MIN_MAX_ALGORITHM=1;
+uint8_t Z_SCORE_ALGORITHM=2;
+
+char *header_column_name,*column_name;
+dimension_t i,j;
+if(dataset_file_name==NULL || columns_to_scale==NULL || parameter_file_name==NULL || algorithm_name==NULL) return NULL;
+
+if(mlfw_strcmp_case_insensitive(algorithm_name,"min-max")==0)
+{
+algorithm_code=MIN_MAX_ALGORITHM;
+}
+else if(mlfw_strcmp_case_insensitive(algorithm_name,"z-score")==0)
+{
+algorithm_code=Z_SCORE_ALGORITHM;
+}
+else
+{
+return NULL;
+}
+
+columns_to_scale_size=mlfw_row_vec_string_get_size(columns_to_scale);
+if(columns_to_scale_size==0) return NULL; 
+if(algorithm_code==MIN_MAX_ALGORITHM)
+{
+parameters_matrix=mlfw_mat_double_create_new(2,columns_to_scale_size);
+if(parameters_matrix==NULL) return NULL;
+}
+else if(algorithm_code==Z_SCORE_ALGORITHM)
+{
+parameters_matrix=mlfw_mat_double_create_new(2,columns_to_scale_size);
+if(parameters_matrix==NULL) return NULL;
+}
+//MORE TO ADD HERE (later on)
+
+matrix=mlfw_mat_double_from_csv(dataset_file_name,NULL,&matrix_header);
+if(matrix==NULL)
+{
+mlfw_mat_double_destroy(parameters_matrix);
+return NULL;
+}
+mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
+matrix_header_size=mlfw_row_vec_string_get_size(matrix_header);
+
+scaled_matrix=mlfw_mat_double_create_new(matrix_rows,1);
+if(scaled_matrix==NULL)
+{
+mlfw_mat_double_destroy(parameters_matrix);
+mlfw_mat_double_destroy(matrix);
+mlfw_row_vec_string_destroy(matrix_header);
+return NULL;
+}
+
+for(i=0;i<columns_to_scale_size;++i)
+{
+mlfw_row_vec_string_get(columns_to_scale,i,&column_name);
+if(column_name==NULL)
+{
+// if fails releease and return 
+mlfw_mat_double_destroy(parameters_matrix);
+mlfw_mat_double_destroy(matrix);
+mlfw_mat_double_destroy(scaled_matrix);
+mlfw_row_vec_string_destroy(matrix_header);
+return NULL;
+}
+for(j=0;j<matrix_header_size;j++)
+{
+mlfw_row_vec_string_get(matrix_header,j,&header_column_name);
+if(header_column_name==NULL)
+{
+//if header_column_name==null release and return 
+mlfw_mat_double_destroy(parameters_matrix);
+mlfw_mat_double_destroy(matrix);
+mlfw_mat_double_destroy(scaled_matrix);
+mlfw_row_vec_string_destroy(matrix_header);
+return NULL;
+}
+if(mlfw_strcmp_case_insensitive(header_column_name,column_name)==0)
+{
+//sacle j-th column
+if(algorithm_code==MIN_MAX_ALGORITHM)
+{
+if(mlfw_scale_double_min_max(matrix,0,j,matrix_rows-1,j,&tmp_matrix,scaled_matrix)!=NULL)
+{
+//scale min-max matrix created 
+mlfw_mat_double_copy(matrix,scaled_matrix,0,j,0,0,matrix_rows-1,0);
+mlfw_mat_double_set(parameters_matrix,0,i,mlfw_mat_double_get(tmp_matrix,0,0));
+mlfw_mat_double_set(parameters_matrix,1,i,mlfw_mat_double_get(tmp_matrix,1,0));
+mlfw_mat_double_destroy(tmp_matrix);
+}
+else
+{
+//release all resources and return NULL
+mlfw_mat_double_destroy(parameters_matrix);
+mlfw_mat_double_destroy(matrix);
+mlfw_mat_double_destroy(scaled_matrix);
+mlfw_row_vec_string_destroy(matrix_header);
+return NULL;
+}
+}
+else if(algorithm_code==Z_SCORE_ALGORITHM)
+{
+if(mlfw_scale_double_z_score(matrix,0,j,matrix_rows-1,j,&tmp_matrix,scaled_matrix)!=NULL)
+{
+//scale z-score matrix
+mlfw_mat_double_copy(matrix,scaled_matrix,0,j,0,0,matrix_rows-1,0);
+mlfw_mat_double_set(parameters_matrix,0,i,mlfw_mat_double_get(tmp_matrix,0,0));
+mlfw_mat_double_set(parameters_matrix,1,i,mlfw_mat_double_get(tmp_matrix,1,0));
+mlfw_mat_double_destroy(tmp_matrix);
+}
+else
+{
+//release all resources and return NULL
+mlfw_mat_double_destroy(parameters_matrix);
+mlfw_mat_double_destroy(matrix);
+mlfw_mat_double_destroy(scaled_matrix);
+mlfw_row_vec_string_destroy(matrix_header);
+return NULL;
+}
+}
+free(header_column_name);
+break; 
+}
+free(header_column_name);
+} //inner loop ends
+free(column_name);
+if(j==matrix_header_size)
+{
+//release and return [Column not found]
+mlfw_mat_double_destroy(parameters_matrix);
+mlfw_mat_double_destroy(matrix);
+mlfw_mat_double_destroy(scaled_matrix);
+mlfw_row_vec_string_destroy(matrix_header);
+return NULL;
+}
+}//outer loop ends
+mlfw_mat_double_to_csv(parameters_matrix,parameter_file_name,columns_to_scale);
+
+mlfw_mat_double_destroy(scaled_matrix);
+mlfw_mat_double_destroy(parameters_matrix);
+mlfw_row_vec_string_destroy(matrix_header);
+return matrix;
+}
