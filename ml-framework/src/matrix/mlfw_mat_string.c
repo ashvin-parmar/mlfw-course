@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
+#include<time.h>
 typedef struct __mlfw_mat_string
 {
 char ***data;
@@ -272,9 +273,10 @@ if(matrix==NULL);
 if(rows!=NULL) *rows=matrix->rows;
 if(columns!=NULL) *columns=matrix->columns; 
 }
-/*
-void mlfw_mat_double_copy(mlfw_mat_double *target,mlfw_mat_double *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index)
+
+void mlfw_mat_string_copy(mlfw_mat_string *target,mlfw_mat_string *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index)
 {
+char *ptr;
 dimension_t target_rows;
 dimension_t target_columns;
 dimension_t source_rows;
@@ -282,8 +284,8 @@ dimension_t source_columns;
 index_t target_r,target_c;
 index_t source_r,source_c;
 if(target==NULL || source==NULL) return;
-mlfw_mat_double_get_dimension(target,&target_rows,&target_columns);
-mlfw_mat_double_get_dimension(source,&source_rows,&source_columns);
+mlfw_mat_string_get_dimension(target,&target_rows,&target_columns);
+mlfw_mat_string_get_dimension(source,&source_rows,&source_columns);
 
 if(from_target_row_index<0 || from_target_row_index>=target_rows) return;
 if(from_target_column_index<0 || from_target_column_index>=target_columns) return;
@@ -301,37 +303,56 @@ for(target_c=from_target_column_index,source_c=from_source_column_index;source_c
 {
 if(target_c>=0 && target_r>=0 && target_r<target_rows && target_c<target_columns)
 {
-mlfw_mat_double_set(target,target_r,target_c,mlfw_mat_double_get(source,target_r,target_c));
-}
-}
-}
-}
-mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matrix,index_t column_index)
+if(target->data[target_r][target_c]!=NULL)
 {
-mlfw_column_vec_double *vector;
+free(target->data[target_r][target_c]);
+target->data[target_r][target_c]=NULL;
+}
+mlfw_mat_string_get(source,target_r,target_c,&ptr);
+if(ptr!=NULL)	mlfw_mat_string_set(target,target_r,target_c,ptr);
+}
+}
+}
+}
+/*
+mlfw_column_vec_string * mlfw_mat_string_create_column_vec(mlfw_mat_string *matrix,index_t column_index,mlfw_column_vec_string *vector)
+{
+char *ptr;
 dimension_t matrix_columns;
 dimension_t matrix_rows;
 index_t r,c;
 if(matrix==NULL) return NULL;
-mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
+mlfw_mat_string_get_dimension(matrix,&matrix_rows,&matrix_columns);
 if(column_index>=matrix_columns || column_index<0) return NULL;
 
-vector=mlfw_column_vec_double_create_new(matrix_rows);
+if(vector==NULL)
+{
+vector=mlfw_column_vec_string_create_new(matrix_rows);
 if(vector==NULL) return NULL;
+}
+else
+{
+if(mlfw_column_vec_string_get_size()!=matrix_rows) return NULL;
+}
 c=column_index;
 for(r=0;r<matrix_rows;r++)
 {
-mlfw_column_vec_double_set(vector,r,mlfw_mat_double_get(matrix,r,c));
+if(matrix[r][c]!=NULL)
+{
+mlfw_mat_string_get(matrix,r,c,&ptr);
+mlfw_column_vec_string_set(vector,r,ptr);
+free(ptr);
+}
 }
 return vector;
 }
-void mlfw_mat_double_fill(mlfw_mat_double *matrix,index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value)
+void mlfw_mat_string_fill(mlfw_mat_string *matrix,index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,string value)
 {
 dimension_t matrix_rows;
 dimension_t matrix_columns;
 index_t r,c;
 if(matrix==NULL) return;
-mlfw_mat_double_get_dimension(matrix,&matrix_rows,&matrix_columns);
+mlfw_mat_string_get_dimension(matrix,&matrix_rows,&matrix_columns);
 if(from_row_index<0 || from_row_index>=matrix_rows) return;
 if(from_column_index<0 || from_column_index>=matrix_columns) return;
 if(to_row_index<0 || to_row_index>=matrix_rows) return;
@@ -344,11 +365,11 @@ for(r=from_row_index;r<=to_row_index;r++)
 {
 for(c=from_column_index;c<=to_column_index;c++)
 {
-mlfw_mat_double_set(matrix,r,c,value);
+mlfw_mat_string_set(matrix,r,c,value);
 }
 }
 }
-void mlfw_mat_double_to_csv(mlfw_mat_double *matrix,const char * csv_file_name)
+void mlfw_mat_string_to_csv(mlfw_mat_string *matrix,const char * csv_file_name)
 {
 index_t r,c;
 char seperator;
@@ -374,19 +395,29 @@ fputc(seperator,file);
 }
 fclose(file);
 }
-mlfw_mat_double * mlfw_mat_double_shuffle(mlfw_mat_double *matrix, uint8_t how_many_times_to_shuffle)
+*/
+mlfw_mat_string * mlfw_mat_string_shuffle(mlfw_mat_string *matrix, uint8_t how_many_times_to_shuffle,mlfw_mat_string *shuffle_matrix)
 {
-mlfw_mat_double *shuffle_matrix;
 int random;
 index_t a,b;
 index_t c,r,idx,end_at_index;
 uint8_t j;
-double tmp_var;
+char *tmp_var;
 if(matrix==NULL) return NULL;
 if(how_many_times_to_shuffle<=0) return NULL;
-shuffle_matrix=mlfw_mat_double_create_new(matrix->rows,matrix->columns);
+if(shuffle_matrix==NULL)
+{
+shuffle_matrix=mlfw_mat_string_create_new(matrix->rows,matrix->columns);
 if(shuffle_matrix==NULL) return NULL;
-mlfw_mat_double_copy(shuffle_matrix,matrix,0,0,0,0,matrix->rows-1,matrix->columns-1);
+}
+else
+{
+if(shuffle_matrix->rows!=matrix->rows || shuffle_matrix->columns!=matrix->columns)
+{
+return NULL;
+}
+}
+mlfw_mat_string_copy(shuffle_matrix,matrix,0,0,0,0,matrix->rows-1,matrix->columns-1);
 b=shuffle_matrix->rows-1;
 end_at_index=shuffle_matrix->rows-3;
 srand(time(NULL));
@@ -407,7 +438,7 @@ shuffle_matrix->data[idx][c]=tmp_var;
 }
 return shuffle_matrix;
 }
-*/
+
 mlfw_mat_string * mlfw_mat_string_transpose(mlfw_mat_string *matrix,mlfw_mat_string *transposed_matrix)
 {
 char *ptr;
