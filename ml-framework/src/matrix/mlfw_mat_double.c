@@ -519,3 +519,61 @@ standard_deviation=sqrt(mean);
 return standard_deviation;
 }
 
+void mlfw_mat_double_get_training_testing_data(const char *dataset,mlfw_mat_double **major_matrix,mlfw_mat_double **minor_matrix,uint8_t minor_percentage)
+{
+
+
+mlfw_mat_double *shuffle_matrix,*matrix;
+mlfw_row_vec_string *header;
+dimension_t major_rows,minor_rows;
+dimension_t shuffle_matrix_rows,shuffle_matrix_columns;
+if(minor_matrix==NULL || major_matrix==NULL) return ;
+*minor_matrix=NULL;
+*major_matrix=NULL;
+if(dataset==NULL) return;
+if(minor_percentage<=0 || minor_percentage>=50)
+{
+//printf("Invalid minor percentage %d\n",minor_percentage);
+return ;
+}
+matrix=mlfw_mat_double_from_csv(dataset,NULL,&header);
+if(matrix==NULL)
+{
+//printf("Unable to load %s\n",dataset_file);
+return ;
+}
+shuffle_matrix=mlfw_mat_double_shuffle(matrix,3,NULL);
+if(shuffle_matrix==NULL)
+{
+//printf("Unable to create test/train dataset files\n");
+mlfw_mat_double_destroy(matrix);
+mlfw_row_vec_string_destroy(header);
+return ;
+}
+mlfw_mat_double_destroy(matrix);		//Main matrix word done
+mlfw_row_vec_string_destroy(header);
+
+mlfw_mat_double_get_dimension(shuffle_matrix,&shuffle_matrix_rows,&shuffle_matrix_columns);
+minor_rows=(dimension_t)(minor_percentage*shuffle_matrix_rows)/100;
+major_rows=shuffle_matrix_rows-minor_rows;
+
+*minor_matrix=mlfw_mat_double_create_new(minor_rows,shuffle_matrix_columns);
+if(*minor_matrix==NULL)
+{
+printf("Unable to create test/train dataset files\n");
+mlfw_mat_double_destroy(shuffle_matrix);
+return ;
+}
+*major_matrix=mlfw_mat_double_create_new(major_rows,shuffle_matrix_columns);
+if(*major_matrix==NULL)
+{
+printf("Unable to create test/train dataset files\n");
+mlfw_mat_double_destroy(shuffle_matrix);
+mlfw_mat_double_destroy(*minor_matrix);
+*minor_matrix=NULL;
+return ;
+}
+mlfw_mat_double_copy(*minor_matrix,shuffle_matrix,0,0,0,0,minor_rows-1,shuffle_matrix_columns-1);
+mlfw_mat_double_copy(*major_matrix,shuffle_matrix,0,0,minor_rows,0,shuffle_matrix_rows-1,shuffle_matrix_columns-1);
+mlfw_mat_double_destroy(shuffle_matrix);
+}
