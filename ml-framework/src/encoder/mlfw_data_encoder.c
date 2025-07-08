@@ -581,3 +581,32 @@ mlfw_mat_string_destroy(matrix);
 mlfw_row_vec_string_destroy(header);
 free(encode_columns);
 }
+
+void mlfw_encoder_encode(const char *source,const char *target,mlfw_row_vec_string *columns_to_encode,const char *algorithm)
+{
+uint8_t algorithm_code=0;
+uint8_t ONE_HOT_ENCODING=1;
+uint8_t BINARY_ENCODING=2;
+if(source==NULL || target==NULL || columns_to_encode==NULL || algorithm==NULL) return;
+if(mlfw_strcmp_case_insensitive(algorithm,"one-hot")==0)
+{
+algorithm_code=ONE_HOT_ENCODING;
+}
+else if(mlfw_strcmp_case_insensitive(algorithm,"binary")==0)
+{
+algorithm_code=BINARY_ENCODING;
+}
+else
+{
+// later on added something to manage error part
+return ;
+}
+if(algorithm_code==ONE_HOT_ENCODING)
+{
+mlfw_encoder_encode_one_hot(source,target,columns_to_encode);
+}
+else if(algorithm_code==BINARY_ENCODING)
+{
+mlfw_encoder_encode_binary(source,target,columns_to_encode);
+}
+}

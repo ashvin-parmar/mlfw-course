@@ -8,7 +8,7 @@ mlfw_mat_double *matrix;
 mlfw_row_vec_string *header;
 
 //matrix=mlfw_scale_double_with_given_parameters("dummy.csv","dummy_min-max_parameters.csv","min-max");
-matrix=mlfw_scale_double_with_given_parameters("dummy.csv","dummy_z-score_parameters.csv","z-score");
+matrix=mlfw_scale_double_with_given_parameters("dummy.csv","dummy_z-score_parameters.csv","z-score",NULL);
 
 if(matrix==NULL)
 {

@@ -13,7 +13,7 @@ mlfw_row_vec_string_set(columns_to_scale,0,"salary");
 mlfw_row_vec_string_set(columns_to_scale,1,"incentive");
 
 //matrix=mlfw_scale_double("dummy.csv",columns_to_scale,"dummy_min-max_parameters.csv","min-max");
-matrix=mlfw_scale_double("dummy.csv",columns_to_scale,"dummy_z-score_parameters.csv","z-score");
+matrix=mlfw_scale_double("dummy.csv",columns_to_scale,"dummy_z-score_parameters.csv","z-score",NULL);
 
 if(matrix==NULL)
 {

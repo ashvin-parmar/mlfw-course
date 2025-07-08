@@ -271,9 +271,8 @@ mlfw_mat_double_set(new_matrix,new_matrix_r,new_matrix_c,scaled_value);
 return new_matrix;
 }
 
-mlfw_mat_double *mlfw_scale_double(const char *dataset_file_name,mlfw_row_vec_string *columns_to_scale,const char *parameter_file_name,const char *algorithm_name)
+mlfw_mat_double *mlfw_scale_double(const char *dataset_file_name,mlfw_row_vec_string *columns_to_scale,const char *parameter_file_name,const char *algorithm_name,mlfw_mat_double *matrix)
 {
-mlfw_mat_double *matrix;
 dimension_t matrix_rows,matrix_columns;
 mlfw_row_vec_string *matrix_header;
 dimension_t matrix_header_size;
@@ -318,7 +317,7 @@ if(parameters_matrix==NULL) return NULL;
 }
 //MORE TO ADD HERE (later on)
 
-matrix=mlfw_mat_double_from_csv(dataset_file_name,NULL,&matrix_header);
+matrix=mlfw_mat_double_from_csv(dataset_file_name,matrix,&matrix_header);
 if(matrix==NULL)
 {
 mlfw_mat_double_destroy(parameters_matrix);
@@ -431,9 +430,8 @@ mlfw_mat_double_destroy(parameters_matrix);
 mlfw_row_vec_string_destroy(matrix_header);
 return matrix;
 }
-mlfw_mat_double *mlfw_scale_double_with_given_parameters(const char *dataset_file_name,const char *parameter_file_name,const char *algorithm_name)
+mlfw_mat_double *mlfw_scale_double_with_given_parameters(const char *dataset_file_name,const char *parameter_file_name,const char *algorithm_name,mlfw_mat_double *matrix)
 {
-mlfw_mat_double *matrix;
 mlfw_row_vec_string *columns_to_scale;
 dimension_t matrix_rows,matrix_columns;
 mlfw_row_vec_string *matrix_header;
@@ -471,7 +469,7 @@ if(parameters_matrix==NULL) return NULL;
 columns_to_scale_size=mlfw_row_vec_string_get_size(columns_to_scale);
 if(columns_to_scale_size==0) return NULL; 
 
-matrix=mlfw_mat_double_from_csv(dataset_file_name,NULL,&matrix_header);
+matrix=mlfw_mat_double_from_csv(dataset_file_name,matrix,&matrix_header);
 if(matrix==NULL)
 {
 mlfw_mat_double_destroy(parameters_matrix);

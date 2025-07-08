@@ -2,4 +2,5 @@
 #define __MLFW_DATA_ENCODER__
 void mlfw_encoder_encode_one_hot(const char *source,const char *target,mlfw_row_vec_string *encode_cols);
 void mlfw_encoder_encode_binary(const char *source,const char *target,mlfw_row_vec_string *encode_cols);
+void mlfw_encoder_encode(const char *source,const char *target,mlfw_row_vec_string *encode_cols,const char *algorithm);
 #endif
