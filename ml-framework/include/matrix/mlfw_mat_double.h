@@ -26,5 +26,5 @@ double mlfw_mat_double_get_mean(mlfw_mat_double *matrix,index_t start_row_index,
 
 double mlfw_mat_double_get_standard_deviation(mlfw_mat_double *matrix,index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
 
-void mlfw_mat_double_get_training_testing_data(const char *dataset,mlfw_mat_double **training_matrix,mlfw_mat_double **testing_matrix,uint8_t minor_percentage);
+void mlfw_mat_double_get_training_testing_data(const char *csv_file_name,mlfw_mat_double **training_matrix,mlfw_mat_double **testing_matrix,uint8_t testing_data_percentage);
 #endif

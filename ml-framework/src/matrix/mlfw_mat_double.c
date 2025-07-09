@@ -519,61 +519,102 @@ standard_deviation=sqrt(mean);
 return standard_deviation;
 }
 
-void mlfw_mat_double_get_training_testing_data(const char *dataset,mlfw_mat_double **major_matrix,mlfw_mat_double **minor_matrix,uint8_t minor_percentage)
+void mlfw_mat_double_get_training_testing_data(const char *csv_file_name,mlfw_mat_double **training_matrix,mlfw_mat_double **testing_matrix,uint8_t testing_data_percentage)
 {
-
-
-mlfw_mat_double *shuffle_matrix,*matrix;
+mlfw_mat_double *matrix;
+mlfw_mat_double *shuffle_matrix;
 mlfw_row_vec_string *header;
-dimension_t major_rows,minor_rows;
-dimension_t shuffle_matrix_rows,shuffle_matrix_columns;
-if(minor_matrix==NULL || major_matrix==NULL) return ;
-*minor_matrix=NULL;
-*major_matrix=NULL;
-if(dataset==NULL) return;
-if(minor_percentage<=0 || minor_percentage>=50)
+
+mlfw_mat_double *minor_matrix;
+mlfw_mat_double *major_matrix;
+dimension_t minor_rows,major_rows;
+index_t i,j;
+
+if(training_matrix==NULL || testing_matrix==NULL)
 {
-//printf("Invalid minor percentage %d\n",minor_percentage);
+if(training_matrix!=NULL) *training_matrix=NULL;
+if(testing_matrix!=NULL) *testing_matrix=NULL;
 return ;
 }
-matrix=mlfw_mat_double_from_csv(dataset,NULL,&header);
-if(matrix==NULL)
+*training_matrix=NULL;
+*testing_matrix=NULL;
+if(csv_file_name==NULL) return ;
+if(testing_data_percentage<=0 || testing_data_percentage>=100)
 {
-//printf("Unable to load %s\n",dataset_file);
 return ;
 }
+
+matrix=mlfw_mat_double_from_csv(csv_file_name,NULL,&header);
+if(matrix==NULL) return ;
 shuffle_matrix=mlfw_mat_double_shuffle(matrix,3,NULL);
 if(shuffle_matrix==NULL)
 {
-//printf("Unable to create test/train dataset files\n");
 mlfw_mat_double_destroy(matrix);
 mlfw_row_vec_string_destroy(header);
 return ;
 }
-mlfw_mat_double_destroy(matrix);		//Main matrix word done
+mlfw_mat_double_destroy(matrix);
 mlfw_row_vec_string_destroy(header);
 
-mlfw_mat_double_get_dimension(shuffle_matrix,&shuffle_matrix_rows,&shuffle_matrix_columns);
-minor_rows=(dimension_t)(minor_percentage*shuffle_matrix_rows)/100;
-major_rows=shuffle_matrix_rows-minor_rows;
+minor_rows=(dimension_t)(shuffle_matrix->rows*testing_data_percentage/100);
+major_rows=shuffle_matrix->rows-minor_rows;
 
-*minor_matrix=mlfw_mat_double_create_new(minor_rows,shuffle_matrix_columns);
-if(*minor_matrix==NULL)
+//transfer allocated array of double to minor or major matrix instead of copied matrix rows
+minor_matrix=(mlfw_mat_double *)malloc(sizeof(mlfw_mat_double));
+if(minor_matrix==NULL)
 {
-printf("Unable to create test/train dataset files\n");
 mlfw_mat_double_destroy(shuffle_matrix);
 return ;
 }
-*major_matrix=mlfw_mat_double_create_new(major_rows,shuffle_matrix_columns);
-if(*major_matrix==NULL)
+minor_matrix->data=(double **)malloc(sizeof(double *)*minor_rows);
+if(minor_matrix->data==NULL)
 {
-printf("Unable to create test/train dataset files\n");
 mlfw_mat_double_destroy(shuffle_matrix);
-mlfw_mat_double_destroy(*minor_matrix);
-*minor_matrix=NULL;
+free(minor_matrix->data);
 return ;
 }
-mlfw_mat_double_copy(*minor_matrix,shuffle_matrix,0,0,0,0,minor_rows-1,shuffle_matrix_columns-1);
-mlfw_mat_double_copy(*major_matrix,shuffle_matrix,0,0,minor_rows,0,shuffle_matrix_rows-1,shuffle_matrix_columns-1);
+minor_matrix->rows=minor_rows;
+minor_matrix->columns=shuffle_matrix->columns;
+for(i=0,j=0;i<minor_rows;i++,j++)
+{
+minor_matrix->data[i]=shuffle_matrix->data[j];
+}
+
+major_matrix=(mlfw_mat_double *)malloc(sizeof(mlfw_mat_double));
+if(major_matrix==NULL)
+{
 mlfw_mat_double_destroy(shuffle_matrix);
+free(minor_matrix->data);
+free(minor_matrix);
+return ;
+}
+major_matrix->data=(double **)malloc(sizeof(double *)*major_rows);
+if(major_matrix->data==NULL)
+{
+mlfw_mat_double_destroy(shuffle_matrix);
+free(minor_matrix->data);
+free(minor_matrix);
+free(major_matrix);
+return ;
+}
+major_matrix->rows=major_rows;
+major_matrix->columns=shuffle_matrix->columns;
+for(i=0;i<major_rows;i++,j++)
+{
+major_matrix->data[i]=shuffle_matrix->data[j];
+}
+//manually release shuffle matrix data
+free(shuffle_matrix->data);
+free(shuffle_matrix);
+//My Idea
+if(minor_rows>major_rows)
+{
+*training_matrix=minor_matrix;
+*testing_matrix=major_matrix;
+}
+else
+{
+*training_matrix=major_matrix;
+*testing_matrix=minor_matrix;
+}
 }
