@@ -7,5 +7,5 @@
 #define index_t uint64_t
 #endif
 #include<learning/mlfw_score.h>
-
+#include<learning/mlfw_linear_regression.h>
 #endif
