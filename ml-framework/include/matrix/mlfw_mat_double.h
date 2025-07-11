@@ -28,5 +28,4 @@ double mlfw_mat_double_get_standard_deviation(mlfw_mat_double *matrix,index_t st
 
 void mlfw_mat_double_get_training_testing_data(const char *csv_file_name,mlfw_mat_double **training_matrix,mlfw_mat_double **testing_matrix,uint8_t testing_data_percentage);
 
-double mlfw_mat_double_get_r2score(const char *csv_file_name);
 #endif
