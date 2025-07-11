@@ -7,4 +7,5 @@ gcc -c ../src/set/*.c -I ../include -Wall
 gcc -c ../src/encoder/*.c -I ../include -Wall
 gcc -c ../src/scaling/*.c -I ../include -Wall
 gcc -c ../src/utils/*.c -I ../include -Wall
+gcc -c ../src/learning/*.c -I ../include -Wall
 ar rcs ../lib/libml-framework.a *.o
