@@ -4,12 +4,6 @@
 #include<mlfw_operations.h>
 #include<inttypes.h>
 #include<stdio.h>
-#include<stdlib.h>
-#include<pthread.h>		//For threading implementation in c programming
-
-uint8_t STOP_FLAG=0;
-uint64_t NUMBER_OF_ITERATION=-1;
-double LEARNING_RATE=1.0;
 
 mlfw_row_vec_double *mlfw_regression_gradient_fit_line(mlfw_mat_double *input_values_matrix,mlfw_column_vec_double *target_values_vector,double learning_rate,uint64_t number_of_iteration,uint8_t (*on_each_iteration)(uint64_t iteration_number,double error_value))
 {
@@ -41,9 +35,6 @@ if(input_values_matrix==NULL || target_values_vector==NULL || learning_rate>=1 |
 mlfw_mat_double_get_dimension(input_values_matrix,&input_values_matrix_rows,&input_values_matrix_columns);
 target_values_vector_size=mlfw_column_vec_double_get_size(target_values_vector);
 if(input_values_matrix_columns!=target_values_vector_size) return NULL;
-
-LEARNING_RATE=learning_rate;
-NUMBER_OF_ITERATION=number_of_iteration;
 
 I_rows=input_values_matrix_rows;
 I_columns=input_values_matrix_columns-1+1;		//+1 Columns for Unity | -1 Columns of Yn Data
@@ -148,9 +139,8 @@ return NULL;
 }
 error_number=0;
 k=0;
-while(STOP_FLAG==0)		//loop starts
+while(k<number_of_iteration)		//loop starts
 {
-if(k==NUMBER_OF_ITERATION) break;	//Termination from loop
 P=mlfw_multiply_double_matrix_with_column_vector(I,m,P);
 if(P==NULL)
 {
@@ -186,7 +176,7 @@ if(ITE==NULL)
 error_number=1;
 break;
 }						//Learning rate
-TMP=mlfw_multiply_double_scalar_with_column_vector((LEARNING_RATE)*(1.0/I_rows),ITE,TMP);
+TMP=mlfw_multiply_double_scalar_with_column_vector((learning_rate)*(1.0/I_rows),ITE,TMP);
 if(TMP==NULL)
 {
 error_number=1;
