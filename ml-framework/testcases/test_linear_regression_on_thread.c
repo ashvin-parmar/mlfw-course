@@ -52,7 +52,7 @@ return NULL;
 }
 
 
-parameters=mlfw_regression_gradient_fit_line(matrix,target_vector,learning_rate,number_of_iteration,on_each_iteration);
+parameters=mlfw_linnear_regression_gradient_descent_fit_line(matrix,target_vector,learning_rate,number_of_iteration,on_each_iteration);
 if(parameters==NULL)
 {
 printf("Low on memory\n");

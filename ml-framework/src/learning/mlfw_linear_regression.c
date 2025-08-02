@@ -5,7 +5,7 @@
 #include<inttypes.h>
 #include<stdio.h>
 
-mlfw_row_vec_double *mlfw_regression_gradient_fit_line(mlfw_mat_double *input_values_matrix,mlfw_column_vec_double *target_values_vector,double learning_rate,uint64_t number_of_iteration,uint8_t (*on_each_iteration)(uint64_t iteration_number,double error_value))
+mlfw_row_vec_double *mlfw_linear_regression_gradient_descent_fit_line(mlfw_mat_double *input_values_matrix,mlfw_column_vec_double *target_values_vector,double learning_rate,uint64_t number_of_iteration,uint8_t (*on_each_iteration)(uint64_t iteration_number,double error_value))
 {
 mlfw_row_vec_double *parameter_row_vector;
 mlfw_mat_double *I;
@@ -239,4 +239,43 @@ parameter_row_vector=mlfw_column_vec_double_transpose(m,NULL);
 mlfw_column_vec_double_destroy(m);
 
 return parameter_row_vector;
+}
+mlfw_column_vec_double *mlfw_regression_predict(mlfw_mat_double *input_features_matrix,mlfw_row_vec_double *trained_parameters)
+{
+mlfw_mat_double *I; 
+dimension_t I_rows;
+dimension_t I_columns;
+dimension_t trained_parameters_size;
+mlfw_column_vec_double *m; 
+mlfw_column_vec_double *P;
+
+if(input_features_matrix==NULL || trained_parameters==NULL) return NULL;
+I=input_features_matrix;
+trained_parameters_size=mlfw_row_vec_double_get_size(trained_parameters);
+mlfw_mat_double_get_dimension(I,&I_rows,&I_columns);
+if(trained_parameters_size!=I_columns) return NULL;
+mlfw_mat_double_reshape(&I,I_rows,I_columns+1);
+if(I==NULL) return NULL;
+I_columns=I_columns+1;
+mlfw_mat_double_right_shift(I,1);
+mlfw_mat_double_fill(I,0,0,I_rows-1,0,1.0);	//not necessary, but still
+m=mlfw_row_vec_double_transpose(trained_parameters,NULL);
+if(m==NULL)
+{
+mlfw_mat_double_left_shift(I,1);
+mlfw_mat_double_reshape(&I,I_rows,I_columns-1);
+return NULL;
+}
+P=mlfw_multiply_double_matrix_with_column_vector(I,m,NULL);
+if(P==NULL)
+{
+mlfw_mat_double_left_shift(I,1);
+mlfw_mat_double_reshape(&I,I_rows,I_columns-1);
+mlfw_column_vec_double_destroy(m);
+return NULL;
+}
+mlfw_mat_double_left_shift(I,1);
+mlfw_mat_double_reshape(&I,I_rows,I_columns-1);
+mlfw_column_vec_double_destroy(m);
+return P;
 }

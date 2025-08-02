@@ -729,7 +729,7 @@ c--;
 void mlfw_mat_double_left_shift(mlfw_mat_double *matrix,dimension_t how_many_places_to_shift)
 {
 index_t r,c;
-int new_c;
+int64_t new_c;
 if(matrix==NULL) return ;
 if(how_many_places_to_shift<=0) return ;
 if(how_many_places_to_shift>matrix->columns) how_many_places_to_shift=matrix->columns;
