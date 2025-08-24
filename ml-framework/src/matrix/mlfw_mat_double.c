@@ -623,6 +623,7 @@ void mlfw_mat_double_reshape(mlfw_mat_double **matrix_to_reshape,dimension_t new
 mlfw_mat_double *matrix;
 double **new_data_array;
 index_t i;
+dimension_t r;
 double *new_row;
 if(matrix_to_reshape==NULL) return ;
 if(new_rows_count<=0 || new_columns_count<=0)
@@ -631,6 +632,7 @@ mlfw_mat_double_destroy(*matrix_to_reshape);
 *matrix_to_reshape=NULL;
 return ;
 }
+
 matrix=*matrix_to_reshape;
 if(matrix->rows==new_rows_count && matrix->columns==new_columns_count) return;
 // increase number of rows
@@ -639,31 +641,13 @@ if(new_rows_count>matrix->rows)
 new_data_array=(double **)realloc(matrix->data,sizeof(double *)*new_rows_count);
 if(new_data_array==NULL)
 {
-mlfw_mat_double_destroy(matrix);
-matrix=NULL;
+mlfw_mat_double_destroy(*matrix_to_reshape);
+*matrix_to_reshape=NULL;
 return ;
 }
 matrix->data=new_data_array;
-
-if(matrix->columns==new_columns_count)
-{
-for(i=matrix->rows;i<new_rows_count;i++)
-{
-new_row=(double *)malloc(sizeof(double)*new_columns_count);
-if(new_row==NULL)
-{
-matrix->rows=i;
-mlfw_mat_double_destroy(matrix);
-matrix=NULL;
-return;
-}
-matrix->data[i]=new_row;
-}
-matrix->rows=new_rows_count;
-return;
-}
-//Above if condition for bug correction
 for(i=matrix->rows;i<new_rows_count;i++) matrix->data[i]=NULL;
+r=matrix->rows;
 matrix->rows=new_rows_count;
 }
 else if(new_rows_count<matrix->rows)	//Decrease number of rows
@@ -680,24 +664,44 @@ for(i=0;i<new_rows_count;i++)
 free(matrix->data[i]);
 }
 free(matrix->data);
-free(matrix);
-matrix=NULL;
+free(*matrix_to_reshape);
+*matrix_to_reshape=NULL;
 return ;
 }
 matrix->data=new_data_array;
+r=matrix->rows;
 matrix->rows=new_rows_count;
 }
 //Now, reshape columns
 
-if(new_columns_count==matrix->columns) return ;
-
+//if(new_columns_count==matrix->columns) return ;
+if(matrix->columns==new_columns_count)
+{
+for(i=r;i<new_rows_count;i++)
+{
+new_row=(double *)malloc(sizeof(double)*new_columns_count);
+if(new_row==NULL)
+{
+for(r=0;r<i;r++)
+{
+free(matrix->data[r]);
+}
+free(matrix->data);
+free(matrix);
+*matrix_to_reshape=NULL;
+return;
+}
+matrix->data[i]=new_row;
+}
+return ;
+}
 for(i=0;i<matrix->rows;i++)
 {
 new_row=(double *)realloc(matrix->data[i],sizeof(double)*new_columns_count);
 if(new_row==NULL)
 {
-mlfw_mat_double_destroy(matrix);
-matrix=NULL;
+mlfw_mat_double_destroy(*matrix_to_reshape);
+*matrix_to_reshape=NULL;
 return ;
 }
 matrix->data[i]=new_row;
@@ -729,7 +733,7 @@ c--;
 void mlfw_mat_double_left_shift(mlfw_mat_double *matrix,dimension_t how_many_places_to_shift)
 {
 index_t r,c;
-int64_t new_c;
+int new_c;
 if(matrix==NULL) return ;
 if(how_many_places_to_shift<=0) return ;
 if(how_many_places_to_shift>matrix->columns) how_many_places_to_shift=matrix->columns;

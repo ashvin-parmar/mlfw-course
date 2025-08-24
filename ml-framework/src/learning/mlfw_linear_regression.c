@@ -28,17 +28,16 @@ double final_error_value;
 int error_number=0;
 index_t r; 
 if(input_values_matrix==NULL || target_values_vector==NULL || on_each_iteration==NULL) return NULL;
-if(number_of_iteration<=0) return NULL;
+if(number_of_iteration<=0) return NULL;//not triggered in it
 if(learning_rate>=1 || learning_rate<=0 ) return NULL; //error management in next module
 
 I=input_values_matrix;
 mlfw_mat_double_get_dimension(I,&I_rows,&I_columns);
-mlfw_mat_double_reshape(&I,I_rows,I_columns+1);
+mlfw_mat_double_reshape(&I,I_rows,I_columns+1);	
 if(I==NULL) return NULL;
 I_columns=I_columns+1;
 mlfw_mat_double_right_shift(I,1);
 mlfw_mat_double_fill(I,0,0,I_rows-1,0,1.0);	//Fill bias
-
 IT=mlfw_mat_double_transpose(I,NULL);
 if(IT==NULL)
 {
@@ -144,8 +143,9 @@ return NULL;
 }
 error_number=0;
 k=1;
-while(k<=number_of_iteration)		//loop starts
+while(1)		//loop starts
 {
+if(number_of_iteration>0 && k==(number_of_iteration+1)) break;
 P=mlfw_multiply_double_matrix_with_column_vector(I,m,P);
 if(P==NULL)
 {
@@ -187,7 +187,7 @@ if(TMP==NULL)
 error_number=1;
 break;
 }
-um=mlfw_subtract_double_column_vector(m,TMP,NULL);
+um=mlfw_subtract_double_column_vector(m,TMP,um);
 if(um==NULL)
 {
 error_number=1;
@@ -199,13 +199,14 @@ mlfw_column_vec_double_set(m,r,mlfw_column_vec_double_get(um,r));
 }
 if(on_each_iteration!=NULL)
 {
-if(!on_each_iteration(k,final_error_value))
+if(on_each_iteration(k,final_error_value)==0)
 {
 break;
 }
 }
 ++k;
 }
+
 if(error_number==1)
 {
 //printf("Dimension of container is incorrect\n");
@@ -234,13 +235,11 @@ mlfw_column_vec_double_destroy(ETE);
 mlfw_column_vec_double_destroy(ITE);
 mlfw_column_vec_double_destroy(TMP);
 mlfw_column_vec_double_destroy(um);
-
 parameter_row_vector=mlfw_column_vec_double_transpose(m,NULL);
 mlfw_column_vec_double_destroy(m);
-
 return parameter_row_vector;
 }
-mlfw_column_vec_double *mlfw_regression_predict(mlfw_mat_double *input_features_matrix,mlfw_row_vec_double *trained_parameters)
+mlfw_column_vec_double *mlfw_linear_regression_predict(mlfw_mat_double *input_features_matrix,mlfw_row_vec_double *trained_parameters)
 {
 mlfw_mat_double *I; 
 dimension_t I_rows;
@@ -253,7 +252,7 @@ if(input_features_matrix==NULL || trained_parameters==NULL) return NULL;
 I=input_features_matrix;
 trained_parameters_size=mlfw_row_vec_double_get_size(trained_parameters);
 mlfw_mat_double_get_dimension(I,&I_rows,&I_columns);
-if(trained_parameters_size!=I_columns) return NULL;
+if(trained_parameters_size!=I_columns+1) return NULL;
 mlfw_mat_double_reshape(&I,I_rows,I_columns+1);
 if(I==NULL) return NULL;
 I_columns=I_columns+1;

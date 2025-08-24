@@ -9,8 +9,8 @@ uint64_t number_of_iteration;
 uint8_t on_each_iteration(uint64_t iteration_number,double error_value)
 {
 printf("%" PRIu64 " , %20.15lf\n",iteration_number,error_value);
-
 if(number_of_iteration==iteration_number) return 0;
+else return 1;
 }
 
 int main()
@@ -21,7 +21,7 @@ mlfw_column_vec_double *target_vector;
 double learning_rate;
 mlfw_row_vec_double *parameters;
 dimension_t matrix_rows,matrix_columns;
-number_of_iteration=100000;
+number_of_iteration=100;
 learning_rate=0.0001;
 matrix=mlfw_mat_double_from_csv("IceCreamSales.csv",NULL,&header);
 if(matrix==NULL)
@@ -39,17 +39,15 @@ mlfw_mat_double_destroy(matrix);
 mlfw_row_vec_string_destroy(header);
 return 0;
 }
-
 mlfw_mat_double_reshape(&matrix,matrix_rows,matrix_columns-1);
 if(matrix==NULL)
 {
 printf("Low on memory\n");
-mlfw_mat_double_destroy(matrix);
 mlfw_row_vec_string_destroy(header);
 mlfw_column_vec_double_destroy(target_vector);
 return 0;
 }
-
+matrix_columns=matrix_columns-1;
 
 parameters=mlfw_linear_regression_gradient_descent_fit_line(matrix,target_vector,learning_rate,number_of_iteration,on_each_iteration);
 if(parameters==NULL)
