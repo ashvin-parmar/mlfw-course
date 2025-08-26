@@ -27,8 +27,8 @@ double sum_of_squared_error_values;
 double final_error_value; 
 int error_number=0;
 index_t r; 
-if(input_values_matrix==NULL || target_values_vector==NULL || on_each_iteration==NULL) return NULL;
-if(number_of_iteration<=0) return NULL;//not triggered in it
+if(input_values_matrix==NULL || target_values_vector==NULL) return NULL;
+if(number_of_iteration<=0 && on_each_iteration==NULL) return NULL;//not triggered in it
 if(learning_rate>=1 || learning_rate<=0 ) return NULL; //error management in next module
 
 I=input_values_matrix;

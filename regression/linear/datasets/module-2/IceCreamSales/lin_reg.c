@@ -60,7 +60,7 @@ mlfw_column_vec_double_destroy(training_examples_target_values_vector);
 return 0;
 }
 
-trained_parameters=mlfw_linear_regression_gradient_descent_fit_line(training_examples_matrix,training_examples_target_values_vector,0.0001,atoi(argv[1]),screen_logger);
+trained_parameters=mlfw_linear_regression_gradient_descent_fit_line(training_examples_matrix,training_examples_target_values_vector,0.0003,atoi(argv[1]),screen_logger);
 if(trained_parameters==NULL)
 {
 printf("Low on memory\n");
