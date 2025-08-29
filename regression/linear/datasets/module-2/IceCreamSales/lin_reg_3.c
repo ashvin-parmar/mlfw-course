@@ -20,9 +20,9 @@ static mlfw_mat_double *matrix=NULL;
 printf("Iteration number: %" PRIu64 ", Error: %40.12lf\n",iteration_number,error_value);
 if(iteration_number==1)
 {
-matrix=mlfw_mat_double_create_new(20000,2);
+matrix=mlfw_mat_double_create_new(200,2);
 }
-if(iteration_number<20000)
+if(iteration_number<200)
 {
 if(matrix!=NULL)
 {
@@ -30,7 +30,7 @@ mlfw_mat_double_set(matrix,(index_t)(iteration_number-1),0,(double)iteration_num
 mlfw_mat_double_set(matrix,(index_t)(iteration_number-1),1,(double)error_value);
 }
 }
-else if(iteration_number==20000)
+else if(iteration_number==200)
 {
 if(matrix!=NULL)
 {
@@ -39,7 +39,7 @@ mlfw_mat_double_set(matrix,(index_t)(iteration_number-1),1,(double)error_value);
 f=fopen("graph.data","w");
 if(f!=NULL)
 {
-for(r=0;r<20000;r++)
+for(r=0;r<200;r++)
 {
 value1=mlfw_mat_double_get(matrix,r,0);
 value2=mlfw_mat_double_get(matrix,r,1);
@@ -48,8 +48,8 @@ fprintf(f,"%lf,%lf\n",value1,value2);
 fclose(f);
 gnuplot=popen("gnuplot --persist","w");
 fprintf(gnuplot,"set datafile separator ','\n");
-fprintf(gnuplot,"set yrange [15:22]\n");
-fprintf(gnuplot,"set xrange [1:20000]\n");
+//fprintf(gnuplot,"set yrange [15:22]\n");
+//fprintf(gnuplot,"set xrange [1:200]\n");
 fprintf(gnuplot,"plot 'graph.data'\n");
 fprintf(gnuplot,"exit\n");
 pclose(gnuplot);
