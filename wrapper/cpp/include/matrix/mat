@@ -1,0 +1,28 @@
+#ifndef __$__mat__
+#define __$__mat__ 1242
+
+#include<iostream>
+#include<matrix/imat>
+extern "C" 
+{
+#include<mlfw_matrix.h>
+}
+using namespace std;
+namespace mlfw
+{
+class Mat: public IMat
+{
+private: 
+mlfw_mat_double *matrix;
+public:
+Mat(int row,int column) noexcept(false);
+Mat(int row,int column,double value) noexcept(false);
+Mat(const Mat *other) noexcept(false);
+
+double get(int row,int column) noexcept(false);
+void set(int row,int column,double value) noexcept(false);
+virtual ~Mat() noexcept(false);
+};
+}
+
+#endif

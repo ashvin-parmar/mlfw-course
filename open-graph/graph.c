@@ -2,11 +2,12 @@
 #include<stdio.h>
 int main()
 {
-GLFWwindow window;
-GLFWmonitor monitor;
-const GLFWvidmode video_mode;
+GLFWwindow *window;
+GLFWmonitor *monitor;
+const GLFWvidmode *video_mode;
 int desktop_width,desktop_height;
 int window_width,window_height;
+int window_position_x,window_position_y;
 if(!glfwInit())
 {
 printf("Unable to create graph template\n");
@@ -32,10 +33,10 @@ glfwSetWindowPos(window,window_position_x,window_position_y);
 glfwMakeContextCurrent(window);
 while(!glfwWindowShouldClose(window))
 {
-glClear(GL_COLOR_CUFFER_BIT);
+glClear(GL_COLOR_BUFFER_BIT);
 //update_view(window_width,window_height);
 glfwSwapBuffers(window);
-glfwPollEvent();
+glfwPollEvents();
 }
 glfwDestroyWindow(window);
 glfwTerminate();

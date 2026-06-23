@@ -1,0 +1,21 @@
+#ifndef __$__mlfw_exception__ 
+#define __$__mlfw_exception__ 234
+
+#include<iostream>
+using namespace std;
+namespace mlfw
+{
+class MLFWException:public exception
+{
+string messege;
+public:
+MLFWException();
+MLFWException(const MLFWException &other);
+MLFWException(string messege);
+MLFWException& operator=(const MLFWException &other);
+virtual ~MLFWException() throw();
+const char * what() const throw();
+};
+}
+#endif
+
