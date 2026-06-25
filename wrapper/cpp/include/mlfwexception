@@ -1,5 +1,4 @@
-#ifndef __$__mlfw_exception__ 
-#define __$__mlfw_exception__ 234
+#pragma once
 
 #include<iostream>
 using namespace std;
@@ -17,5 +16,4 @@ virtual ~MLFWException() throw();
 const char * what() const throw();
 };
 }
-#endif
 

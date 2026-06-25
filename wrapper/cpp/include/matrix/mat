@@ -1,28 +1,60 @@
-#ifndef __$__mat__
-#define __$__mat__ 1242
+#pragma once 
 
 #include<iostream>
-#include<matrix/imat>
+#include<vector>
+#include<matrix/matrix>
 extern "C" 
 {
 #include<mlfw_matrix.h>
 }
+
 using namespace std;
 namespace mlfw
 {
-class Mat: public IMat
+class Mat: public Matrix
 {
 private: 
 mlfw_mat_double *matrix;
+dimension_t r;
+dimension_t c;
+Mat();
 public:
-Mat(int row,int column) noexcept(false);
-Mat(int row,int column,double value) noexcept(false);
-Mat(const Mat *other) noexcept(false);
-
-double get(int row,int column) noexcept(false);
-void set(int row,int column,double value) noexcept(false);
+Mat(dimension_t row,dimension_t column) noexcept(false);
+Mat(dimension_t row,dimension_t column,double value) noexcept(false);
+Mat(const Mat &other) noexcept(false);
 virtual ~Mat() noexcept(false);
+
+double get(dimension_t row,dimension_t column) noexcept(false);
+void set(dimension_t row,dimension_t column,double value) noexcept(false);
+
+static Mat* from(string csv_file_name,int file_format,vector<string> &header);
+static void to(Mat *matrix,string csv_file_name,int file_format,vector<string> &header);
+void to(string csv_file_name,int file_format,vector<string> &header);
+
+
+dimension_t rows();
+dimension_t columns();
+vector<dimension_t> dimensions();
+
+void shuffle(unsigned int shuffle_times);
+Mat& transpose();
+double minimum(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
+double maximum(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
+double mean(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
+double standard_deviation(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
+
+void resize(dimension_t new_row_count,dimension_t new_column_count);
+
+void operator<<(dimension_t how_many_to_shift);
+void operator>>(dimension_t how_many_to_shift);
+Mat& operator=(const Mat &other);
+
+//double operator[][](dimension_t row,dimension_t column) noexcept(false);
+//void operator[][]=(dimension_t row,dimension_t column,double value) noexcept(false);
+
+static void copy(Mat &target,Mat &source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index);
+static void fill(index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value);
+
+
 };
 }
-
-#endif

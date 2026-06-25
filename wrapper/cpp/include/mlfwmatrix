@@ -1,6 +1,11 @@
-#ifndef __$__mlfw_wrapper_matrix__ 
-#define __$__mlfw_wrapper_matrix__ 34
+#pragma once
 
+#include<cstdint>
+
+typedef uint32_t dimension_t;
+typedef uint32_t index_t;
+
+extern "C" {
+#include<mlfw_matrix.h>
+}
 #include<matrix/mat>
-
-#endif
