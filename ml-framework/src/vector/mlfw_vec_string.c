@@ -58,7 +58,7 @@ if(*string==NULL) return;
 //memcpy(string,(const void *)vector->data+(i*sizeof(char)),strlen(vector->data[index]));
 strcpy(*string,vector->data[index]);
 }
-void mlfw_column_vec_string_set(mlfw_column_vec_string *vector,index_t index,char *string)
+void mlfw_column_vec_string_set(mlfw_column_vec_string *vector,index_t index,const char *string)
 {
 if(vector==NULL) return ;
 if(string==NULL) return ;
@@ -323,7 +323,7 @@ if(*string==NULL) return;
 //memcpy(string,(const void *)vector->data+(i*sizeof(char)),strlen(vector->data[index]));
 strcpy(*string,vector->data[index]);
 }
-void mlfw_row_vec_string_set(mlfw_row_vec_string *vector,index_t index,char *string)
+void mlfw_row_vec_string_set(mlfw_row_vec_string *vector,index_t index,const char *string)
 {
 if(vector==NULL) return ;
 if(string==NULL) return ;

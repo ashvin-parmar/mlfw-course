@@ -216,7 +216,7 @@ matrix->data[row][column]=value;
 }
 void mlfw_mat_double_get_dimension(mlfw_mat_double *matrix,dimension_t *rows,dimension_t *columns)
 {
-if(matrix==NULL);
+if(matrix==NULL) return;
 if(rows!=NULL) *rows=matrix->rows;
 if(columns!=NULL) *columns=matrix->columns; 
 }

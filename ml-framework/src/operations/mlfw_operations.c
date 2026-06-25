@@ -120,6 +120,3 @@ mlfw_column_vec_double_set(product_vector,i,product);
 return product_vector;
 }
 
-//Vector conversions
-//mlfw_row_vec_double * mlfw_transpose_double_column_vector(mlfw_column_vec_double *column_vector);
-//mlfw_column_vec_double * mlfw_transpose_double_row_vector(mlfw_row_vec_double *row_vector);

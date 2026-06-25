@@ -1,0 +1,11 @@
+1. initially, we have been creating memory for matrix inside loop in module-1. Now, we have optimized the code by allocating fixed required memory before loop and reuse the same allocated memory inside loop for updated data. After completing the training, we delete/free the allocated memory and return the trained_parameters.
+
+2. In module-1, we are using min-max normalization scaling and one hot encoding. 
+There are some problem arrived, like what if number of data from columns which is provided to encode are much higher then encoding will increase the column count in original matrix. 
+So, we have add more different approuch for encoding and normalization. We have add z-score normalization technique, which uses mean and standard variation formula's to scale the data more better way. we have add binary encoding, using which number of encoded columns are covered in range from 1-32 columns for range of 1-2147483647. 
+
+3. There are all tools seperately created for training, testing, and r2_score. But, python has some features to directly call the function alongwith providing csv file, leraning_rate, predicate function, encoding columns, method to use to encode, etc. 
+
+So, we have created seperate function, added in library , such that framework user have to directly call that function, and training will be completed. 
+Next: Using graphical user interface utility, graph plotter created. 
+

@@ -8,7 +8,7 @@ void mlfw_mat_string_destroy(mlfw_mat_string *matrix);
 mlfw_mat_string * mlfw_mat_string_from_csv(const char *csv_file_name,mlfw_mat_string *matrix,mlfw_row_vec_string **header);
 void mlfw_mat_string_to_csv(mlfw_mat_string *matrix,const char *csv_file_name,mlfw_row_vec_string *header);
 void mlfw_mat_string_get(mlfw_mat_string *matrix,index_t row,index_t column,char **value);
-void mlfw_mat_string_set(mlfw_mat_string *matrix,index_t row,index_t column,char *value);
+void mlfw_mat_string_set(mlfw_mat_string *matrix,index_t row,index_t column,const char *value);
 void mlfw_mat_string_get_dimension(mlfw_mat_string *matrix,dimension_t *rows,dimension_t *columns);
 mlfw_mat_string * mlfw_mat_string_transpose(mlfw_mat_string *matrix,mlfw_mat_string *transposed_matrix);
 

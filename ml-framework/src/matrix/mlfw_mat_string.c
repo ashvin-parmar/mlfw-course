@@ -256,7 +256,7 @@ return;
 if(*string==NULL) return;
 strcpy(*string,matrix->data[row][column]);
 }
-void mlfw_mat_string_set(mlfw_mat_string *matrix,index_t row,index_t column,char *string)
+void mlfw_mat_string_set(mlfw_mat_string *matrix,index_t row,index_t column,const char *string)
 {
 if(matrix==NULL || string==NULL) return ;
 if(row<0 || row>=matrix->rows || column<0 || column>=matrix->columns) return;
