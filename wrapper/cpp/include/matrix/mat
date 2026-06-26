@@ -37,7 +37,9 @@ dimension_t columns();
 vector<dimension_t> dimensions();
 
 void shuffle(unsigned int shuffle_times);
-Mat& transpose();
+Mat* get_shuffle(unsigned int shuffle_times);
+
+Mat* transpose();
 double minimum(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
 double maximum(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
 double mean(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index);
@@ -52,8 +54,8 @@ Mat& operator=(const Mat &other);
 //double operator[][](dimension_t row,dimension_t column) noexcept(false);
 //void operator[][]=(dimension_t row,dimension_t column,double value) noexcept(false);
 
-static void copy(Mat &target,Mat &source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index);
-static void fill(index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value);
+static void copy(Mat *target,Mat *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index);
+void fill(index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value);
 
 
 };

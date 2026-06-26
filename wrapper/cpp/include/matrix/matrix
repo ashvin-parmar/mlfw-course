@@ -23,7 +23,8 @@ virtual dimension_t columns()=0;
 virtual vector<dimension_t> dimensions()=0;
 
 virtual void shuffle(unsigned int shuffle_times)=0;
-virtual Matrix& transpose()=0;
+virtual Matrix* transpose()=0;
+
 virtual double minimum(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)=0;
 virtual double maximum(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)=0;
 virtual double mean(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)=0;

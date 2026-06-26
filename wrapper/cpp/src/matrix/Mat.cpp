@@ -166,56 +166,122 @@ vector<dimension_t> Mat::dimensions()
 
 void Mat::shuffle(unsigned int shuffle_times)
 {
-
-}
-Mat& Mat::transpose()
+if(shuffle_times==0) return;
+mlfw_mat_double *shuffle_matrix=NULL;
+shuffle_matrix=mlfw_mat_double_shuffle(this->matrix,shuffle_times,NULL);
+if(shuffle_matrix==NULL)
 {
-return *this;
+throw MLFWException("Unable to shuffle matrix");
+}
+mlfw_mat_double_destroy(this->matrix);
+this->matrix=shuffle_matrix;
+}
+Mat* Mat::get_shuffle(unsigned int shuffle_times)
+{
+if(shuffle_times==0) return new Mat(*this);
+mlfw_mat_double *shuffle_matrix=NULL;
+shuffle_matrix=mlfw_mat_double_shuffle(this->matrix,shuffle_times,NULL);
+if(shuffle_matrix==NULL)
+{
+throw MLFWException("Unable to shuffle matrix");
+}
+Mat *mat=new Mat();
+mat->matrix=shuffle_matrix;
+mat->r=this->r;
+mat->c=this->c;
+return mat;
+}
+
+Mat* Mat::transpose()
+{
+mlfw_mat_double *transpose_matrix=NULL;
+transpose_matrix=mlfw_mat_double_transpose(this->matrix,NULL);
+if(transpose_matrix==NULL)
+{
+throw MLFWException("unable to transpose matrix");
+}
+Mat *mat=new Mat();
+mat->matrix=transpose_matrix;
+mat->r=this->c;
+mat->c=this->r;
+return mat;
 }
 double Mat::minimum(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)
 {
-return 0;
-
+return mlfw_mat_double_get_minimum(this->matrix,start_row_index,end_row_index,start_column_index,end_column_index);
 }
 double Mat::maximum(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)
 {
-return 0;
-
+return mlfw_mat_double_get_maximum(this->matrix,start_row_index,end_row_index,start_column_index,end_column_index);
 }
 double Mat::mean(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)
 {
-return 0;
-
-
+return mlfw_mat_double_get_mean(this->matrix,start_row_index,end_row_index,start_column_index,end_column_index);
 }
 double Mat::standard_deviation(index_t start_row_index,index_t end_row_index,index_t start_column_index,index_t end_column_index)
 {
-return 0;
-
+return mlfw_mat_double_get_standard_deviation(this->matrix,start_row_index,end_row_index,start_column_index,end_column_index);
+}
+void Mat::resize(dimension_t new_rows_count,dimension_t new_columns_count)
+{
+if(new_rows_count<=0 || new_columns_count<=0)
+{
+throw MLFWException("new rows and columns count can not lesser than equal to zero");
+}
+mlfw_mat_double_reshape(&this->matrix,new_rows_count,new_columns_count);
+if(this->matrix==NULL) throw MLFWException("memory issue");
 }
 
-void Mat::resize(dimension_t new_row_count,dimension_t new_column_count)
+void Mat::operator<<(dimension_t how_many_places_to_shift)
 {
-
+	if(how_many_places_to_shift<=0) return; 
+	mlfw_mat_double_right_shift(this->matrix,how_many_places_to_shift);
 }
-
-
-void Mat::operator<<(dimension_t how_many_to_shift)
+void Mat::operator>>(dimension_t how_many_places_to_shift)
 {
-}
-void Mat::operator>>(dimension_t how_many_to_shift)
-{
+		if(how_many_places_to_shift<=0) return; 
+	mlfw_mat_double_left_shift(this->matrix,how_many_places_to_shift);
 }
 //double operator[][](dimension_t row,dimension_t column) noexcept(false);
 //void operator[][]=(dimension_t row,dimension_t column,double value) noexcept(false);
 
-void Mat::copy(Mat &target,Mat &source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index)
+void Mat::copy(Mat *target,Mat *source,index_t from_target_row_index,index_t from_target_column_index,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index)
 {
+if(target==NULL || target->matrix || source==NULL || source->matrix==NULL) throw MLFWException("target or source required");
 
+dimension_t target_rows=target->r;
+dimension_t target_columns=target->c;
+dimension_t source_rows=source->r;
+dimension_t source_columns=source->c;
+bool valid=true;
+if(from_target_row_index<0 || from_target_row_index>=target_rows) valid=false;
+if(from_target_column_index<0 || from_target_column_index>=target_columns) valid=false;
+
+if(from_source_row_index<0 || from_source_row_index>=source_rows) valid=false;
+if(from_source_column_index<0 || from_source_column_index>=source_columns) valid=false;   
+if(to_source_row_index<0 || to_source_row_index>=source_rows) valid=false;
+if(to_source_column_index<0 || to_source_column_index>=source_columns) valid=false;   
+if(from_source_row_index>to_source_row_index) valid=false;
+if(from_source_column_index>to_source_column_index) valid=false;
+if(!valid) throw MLFWException("invalid row/column index order passed");
+
+mlfw_mat_double_copy(target->matrix,source->matrix,from_target_row_index,from_target_column_index,from_source_row_index,from_source_column_index,to_source_row_index,to_source_column_index);
 }
 void Mat::fill(index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value)
 {
+bool valid=true;
+dimension_t matrix_rows=this->r;
+dimension_t matrix_columns=this->c;
 
+if(from_row_index<0 || from_row_index>=matrix_rows) valid=false;
+if(from_column_index<0 || from_column_index>=matrix_columns) valid=false;
+if(to_row_index<0 || to_row_index>=matrix_rows) valid=false;
+if(to_column_index<0 || to_column_index>=matrix_columns) valid=false;
+if(from_row_index>to_row_index) valid=false;
+if(from_column_index>to_column_index) valid=false;
+if(!valid) throw MLFWException("invalid row/column index order passed");
+
+mlfw_mat_double_fill(this->matrix,from_row_index,from_column_index,to_row_index,to_column_index,value);
 }
 
 
