@@ -33,7 +33,28 @@ printf("%6.4lf ",mlfw_mat_double_get(matrix,i,j));
 printf("| \n");
 }
 
-mlfw_mat_double_reshape(&matrix,2,10);
+mlfw_mat_double_reshape(&matrix,200,10);
+if(matrix==NULL)
+{
+printf("Low on memory\n");
+return 0;
+}
+
+mlfw_mat_double_get_dimension(matrix,&rows,&columns);
+printf("Matrix After reshape: \n");
+for(i=0;i<rows;i++)
+{
+printf("| ");
+for(j=0;j<columns;j++)
+{
+printf("%6.4lf ",mlfw_mat_double_get(matrix,i,j));
+}
+printf("| \n");
+}
+
+
+printf("---------------------\n\n");
+mlfw_mat_double_reshape(&matrix,200,3);
 if(matrix==NULL)
 {
 printf("Low on memory\n");

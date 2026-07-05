@@ -622,8 +622,7 @@ void mlfw_mat_double_reshape(mlfw_mat_double **matrix_to_reshape,dimension_t new
 {
 mlfw_mat_double *matrix;
 double **new_data_array;
-index_t i;
-dimension_t r;
+index_t i,r;
 double *new_row;
 if(matrix_to_reshape==NULL) return ;
 if(new_rows_count<=0 || new_columns_count<=0)
@@ -647,7 +646,6 @@ return ;
 }
 matrix->data=new_data_array;
 for(i=matrix->rows;i<new_rows_count;i++) matrix->data[i]=NULL;
-r=matrix->rows;
 matrix->rows=new_rows_count;
 }
 else if(new_rows_count<matrix->rows)	//Decrease number of rows
@@ -669,7 +667,6 @@ free(*matrix_to_reshape);
 return ;
 }
 matrix->data=new_data_array;
-r=matrix->rows;
 matrix->rows=new_rows_count;
 }
 //Now, reshape columns
@@ -677,7 +674,9 @@ matrix->rows=new_rows_count;
 //if(new_columns_count==matrix->columns) return ;
 if(matrix->columns==new_columns_count)
 {
-for(i=r;i<new_rows_count;i++)
+for(i=0;i<new_rows_count;i++)
+{
+if(matrix->data[i]==NULL)
 {
 new_row=(double *)malloc(sizeof(double)*new_columns_count);
 if(new_row==NULL)
@@ -692,6 +691,7 @@ free(matrix);
 return;
 }
 matrix->data[i]=new_row;
+}
 }
 return ;
 }
