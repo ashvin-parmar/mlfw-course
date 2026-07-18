@@ -775,3 +775,75 @@ matrix->data[r][c]=0.0;
 return matrix;
 }
 
+mlfw_mat_double * mlfw_mat_double_clone(mlfw_mat_double *matrix_to_clone,mlfw_mat_double *new_matrix)
+{
+mlfw_mat_double *matrix;
+if(new_matrix==NULL)
+{
+matrix=mlfw_mat_double_create_new(matrix_to_clone->rows,matrix_to_clone->columns);
+if(matrix==NULL) return NULL;
+}
+else
+{
+	if(matrix_to_clone->rows!=new_matrix->rows && matrix_to_clone->columns!=new_matrix->columns) return NULL;
+matrix=new_matrix;
+}
+mlfw_mat_double_copy(matrix,matrix_to_clone,0,0,0,0,matrix_to_clone->rows-1,matrix_to_clone->columns-1);
+return matrix;
+}
+mlfw_mat_double * mlfw_mat_double_inverse(mlfw_mat_double *matrix_to_inverse,mlfw_mat_double *new_matrix)
+{
+mlfw_mat_double *matrix;
+mlfw_mat_double *identity_matrix;
+index_t pivot_column_index;
+index_t pivot_row_index;
+index_t r;
+index_t row_index_of_largest;
+double pivot_value;
+double largest;
+if(matrix_to_inverse==NULL) return NULL;
+if(matrix_to_inverse->rows!=matrix_to_inverse->columns) return NULL;
+matrix=mlfw_mat_double_clone(matrix_to_inverse,NULL);
+if(matrix==NULL) return NULL;
+
+if(new_matrix==NULL)
+{
+identity_matrix=mlfw_mat_double_create_identity_matrix(matrix->rows);
+if(identity_matrix==NULL)
+{
+mlfw_mat_double_destroy(matrix);
+return NULL;
+}
+}
+else
+{
+if(new_matrix->rows!=matrix->rows && new_matrix->columns!=matrix->columns)
+{
+mlfw_mat_double_destroy(matrix);
+return NULL;
+}
+// Make the new matrix as identity matrix by filling 1 and 0's using nested loop
+identity_matrix=new_matrix;
+}
+//rest of the processing on the basis of matrix as left part and identity amatrix as right part of the augmented matrix
+for(r=0;r<matrix->rows;++r)
+{
+pivot_column_index=r;
+pivot_row_index=r;
+pivot_value=matrix->data[pivot_row_index][pivot_column_index];
+largest=pivot_value;
+largest=largest*(-1);
+// loop to find the index of largest abs below r
+// if (r!=index_of_largest) the swap rows of matrix as well as identity matrix make the pivot point values as 1 by dividing all elements of rth row by pivot point value
+
+
+// loop to eliminate all values above rth row in pivot_column_index column
+//Note: That identity matrix should also be updated.
+
+//loop tp eliminate all values below rth row in pivot_column_index column
+//Note: identity matrix should also be updated.
+
+}
+return matrix;
+}
+
