@@ -120,3 +120,54 @@ mlfw_column_vec_double_set(product_vector,i,product);
 return product_vector;
 }
 
+
+mlfw_mat_double * mlfw_multiply_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix)
+{
+mlfw_mat_double *m1,*m2,*m3;
+dimension_t m1_rows,m1_columns;
+dimension_t m2_rows,m2_columns;
+dimension_t m3_rows,m3_columns;
+
+double value1,value2,value3;
+
+index_t r3,c3,c1;
+
+if(left_matrix==NULL || right_matrix==NULL) return NULL;
+m1=left_matrix;
+m2=right_matrix;
+
+mlfw_mat_double_get_dimension(m1,&m1_rows,&m1_columns);
+mlfw_mat_double_get_dimension(m2,&m2_rows,&m2_columns);
+
+if(m1_columns!=m2_rows) return NULL;
+if(new_matrix==NULL)
+{
+m3_rows=m1_rows;
+m3_columns=m2_columns;
+m3=mlfw_mat_double_create_new(m3_rows,m3_columns);
+if(m3==NULL) return NULL;
+}
+else
+{
+mlfw_mat_double_get_dimension(new_matrix,&m3_rows,&m3_columns);
+if(m1_rows!=m3_rows || m2_columns!=m3_columns) return NULL;
+m3=new_matrix;
+}
+
+for(r3=0;r3<m3_rows;r3++)
+{
+for(c3=0;c3<m3_columns;c3++)
+{
+value3=0.0;
+for(c1=0;c1<m1_columns;c1++)
+{
+value1=mlfw_mat_double_get(m1,r3,c1);
+value2=mlfw_mat_double_get(m2,c1,c3);
+value3=value3+(value1*value2);
+}
+value3+=0.0;
+mlfw_mat_double_set(m3,r3,c3,value3);
+}
+}
+return m3;
+}
