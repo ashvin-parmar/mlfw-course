@@ -861,6 +861,7 @@ row_index_of_largest=i;
 }
 if(largest==0)		//this is no solution or infinite many solution case
 {
+//	printf("this is no solution or infinite many solution case");
 mlfw_mat_double_destroy(matrix);
 if(created_memory) mlfw_mat_double_destroy(identity_matrix);
 return NULL;

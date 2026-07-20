@@ -11,6 +11,7 @@ mlfw_row_vec_double *parameter_row_vector;
 mlfw_mat_double *I;
 dimension_t I_rows;
 dimension_t I_columns;
+dimension_t target_values_vector_size;
 
 mlfw_column_vec_double *A;
 mlfw_column_vec_double *m;
@@ -33,6 +34,11 @@ if(learning_rate>=1 || learning_rate<=0 ) return NULL; //error management in nex
 
 I=input_values_matrix;
 mlfw_mat_double_get_dimension(I,&I_rows,&I_columns);
+
+target_values_vector_size=mlfw_column_vec_double_get_size(target_values_vector);
+if(I_rows!=target_values_vector_size) return NULL;
+
+
 mlfw_mat_double_reshape(&I,I_rows,I_columns+1);	
 if(I==NULL) return NULL;
 I_columns=I_columns+1;
@@ -277,4 +283,71 @@ mlfw_mat_double_left_shift(I,1);
 mlfw_mat_double_reshape(&I,I_rows,I_columns-1);
 mlfw_column_vec_double_destroy(m);
 return P;
+}
+
+mlfw_row_vec_double *mlfw_linear_regression_normal_equation_fit_line(mlfw_mat_double *input_values_matrix,mlfw_column_vec_double *target_values_vector)
+{
+mlfw_mat_double *X;
+mlfw_mat_double *XT;
+mlfw_mat_double *XTX;
+mlfw_mat_double *INV_XTX;
+
+dimension_t X_rows,X_columns;
+dimension_t input_values_matrix_rows,input_values_matrix_columns;
+dimension_t target_values_vector_size;
+
+mlfw_column_vec_double *Y;
+mlfw_column_vec_double *XTY;
+
+mlfw_column_vec_double *m;
+mlfw_row_vec_double *parameter_row_vector;
+
+if(input_values_matrix==NULL || target_values_vector==NULL) return NULL;
+mlfw_mat_double_get_dimension(input_values_matrix,&input_values_matrix_rows,&input_values_matrix_columns);
+target_values_vector_size=mlfw_column_vec_double_get_size(target_values_vector);
+if(input_values_matrix_rows!=target_values_vector_size) return NULL;
+X=mlfw_mat_double_clone(input_values_matrix,NULL);
+if(X==NULL) return NULL;
+mlfw_mat_double_get_dimension(X,&X_rows,&X_columns);
+
+mlfw_mat_double_reshape(&X,X_rows,X_columns+1);
+if(X==NULL) return NULL;
+X_columns=X_columns+1;
+mlfw_mat_double_right_shift(X,1);
+mlfw_mat_double_fill(X,0,0,X_rows-1,0,1.0);	//bias filled
+XT=mlfw_mat_double_transpose(X,NULL);
+if(XT==NULL)
+{
+mlfw_mat_double_destroy(X);
+return NULL;
+}
+XTX=mlfw_multiply_double_matrix_with_matrix(XT,X,NULL);
+mlfw_mat_double_destroy(X);
+if(XTX==NULL)
+{
+mlfw_mat_double_destroy(XT);
+return NULL;
+}
+INV_XTX=mlfw_mat_double_inverse(XTX,NULL);
+mlfw_mat_double_destroy(XTX);
+if(INV_XTX==NULL)
+{
+mlfw_mat_double_destroy(XT);
+return NULL;
+}
+Y=target_values_vector;
+XTY=mlfw_multiply_double_matrix_with_column_vector(XT,Y,NULL);
+mlfw_mat_double_destroy(XT);
+if(XTY==NULL)
+{
+	mlfw_mat_double_destroy(INV_XTX);
+	return NULL;
+}
+m=mlfw_multiply_double_matrix_with_column_vector(INV_XTX,XTY,NULL);
+mlfw_mat_double_destroy(INV_XTX);
+mlfw_column_vec_double_destroy(XTY);
+if(m==NULL) return NULL;
+parameter_row_vector=mlfw_column_vec_double_transpose(m,NULL);
+mlfw_column_vec_double_destroy(m);
+return parameter_row_vector;
 }
