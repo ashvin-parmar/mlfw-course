@@ -785,7 +785,7 @@ if(matrix==NULL) return NULL;
 }
 else
 {
-	if(matrix_to_clone->rows!=new_matrix->rows && matrix_to_clone->columns!=new_matrix->columns) return NULL;
+	if(matrix_to_clone->rows!=new_matrix->rows || matrix_to_clone->columns!=new_matrix->columns) return NULL;
 matrix=new_matrix;
 }
 mlfw_mat_double_copy(matrix,matrix_to_clone,0,0,0,0,matrix_to_clone->rows-1,matrix_to_clone->columns-1);
@@ -797,10 +797,13 @@ mlfw_mat_double *matrix;
 mlfw_mat_double *identity_matrix;
 index_t pivot_column_index;
 index_t pivot_row_index;
-index_t r;
+index_t r,c;
+index_t i;
 index_t row_index_of_largest;
 double pivot_value;
 double largest;
+double value;
+int created_memory=0;
 if(matrix_to_inverse==NULL) return NULL;
 if(matrix_to_inverse->rows!=matrix_to_inverse->columns) return NULL;
 matrix=mlfw_mat_double_clone(matrix_to_inverse,NULL);
@@ -814,16 +817,25 @@ if(identity_matrix==NULL)
 mlfw_mat_double_destroy(matrix);
 return NULL;
 }
+created_memory=1;
 }
 else
 {
-if(new_matrix->rows!=matrix->rows && new_matrix->columns!=matrix->columns)
+if(new_matrix->rows!=matrix->rows || new_matrix->columns!=matrix->columns)
 {
 mlfw_mat_double_destroy(matrix);
 return NULL;
 }
-// Make the new matrix as identity matrix by filling 1 and 0's using nested loop
 identity_matrix=new_matrix;
+// Make the new matrix as identity matrix by filling 1 and 0's using nested loop
+for(r=0;r<identity_matrix->rows;++r)
+{
+for(c=0;c<identity_matrix->columns;++c)
+{
+identity_matrix->data[r][c]=(r==c?1.0:0.0); 
+}
+}
+created_memory=0;
 }
 //rest of the processing on the basis of matrix as left part and identity amatrix as right part of the augmented matrix
 for(r=0;r<matrix->rows;++r)
@@ -831,19 +843,76 @@ for(r=0;r<matrix->rows;++r)
 pivot_column_index=r;
 pivot_row_index=r;
 pivot_value=matrix->data[pivot_row_index][pivot_column_index];
+
 largest=pivot_value;
-largest=largest*(-1);
+if(largest<0) largest=largest*(-1);
+row_index_of_largest=r;
 // loop to find the index of largest abs below r
 // if (r!=index_of_largest) the swap rows of matrix as well as identity matrix make the pivot point values as 1 by dividing all elements of rth row by pivot point value
+for(i=r+1;i<matrix->rows;i++)
+{
+value=matrix->data[i][pivot_column_index];
+if(value<0) value=value*(-1);
+if(value>largest)
+{
+largest=value;
+row_index_of_largest=i;
+}
+}
+if(largest==0)		//this is no solution or infinite many solution case
+{
+mlfw_mat_double_destroy(matrix);
+if(created_memory) mlfw_mat_double_destroy(identity_matrix);
+return NULL;
+}
 
+if(row_index_of_largest!=pivot_row_index)
+{
+for(c=0;c<matrix->columns;c++)
+{
+//swap for matrix
+value=matrix->data[row_index_of_largest][c];
+matrix->data[row_index_of_largest][c]=matrix->data[pivot_row_index][c];
+matrix->data[pivot_row_index][c]=value;
+//swap for identity matrix
+value=identity_matrix->data[row_index_of_largest][c];
+identity_matrix->data[row_index_of_largest][c]=identity_matrix->data[pivot_row_index][c];
+identity_matrix->data[pivot_row_index][c]=value;
+}
+}
+
+//make pivot point value equals to 1 and same operations are performed with identity matrix too.
+value=matrix->data[pivot_row_index][pivot_column_index];
+if(value!=1.0)
+{
+for(c=0;c<matrix->columns;++c)
+{
+matrix->data[r][c]=(matrix->data[r][c]/value);
+identity_matrix->data[r][c]=(identity_matrix->data[r][c]/value);
+}
+}
+
+//make all other points than pivot point equals to 0 (zero) for same pivot_column_index
+for(i=0;i<matrix->rows;i++)
+{
+if(i==r) continue;
+value=matrix->data[i][pivot_column_index];
+if(value==0.0) continue;
+for(c=0;c<matrix->columns;++c)
+{
+matrix->data[i][c]=matrix->data[i][c]-value*matrix->data[pivot_row_index][c];
+identity_matrix->data[i][c]=identity_matrix->data[i][c]-value*identity_matrix->data[pivot_row_index][c];		//matrix->data[i][c]* -> this is constant here
+}
+}
 
 // loop to eliminate all values above rth row in pivot_column_index column
 //Note: That identity matrix should also be updated.
 
-//loop tp eliminate all values below rth row in pivot_column_index column
+//loop to eliminate all values below rth row in pivot_column_index column
 //Note: identity matrix should also be updated.
-
 }
-return matrix;
+
+mlfw_mat_double_destroy(matrix);
+return identity_matrix;		//identity matrix is now inverse ot matrix_to_inverse
 }
 
