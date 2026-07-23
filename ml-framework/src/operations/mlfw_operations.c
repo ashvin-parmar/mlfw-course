@@ -171,3 +171,84 @@ mlfw_mat_double_set(m3,r3,c3,value3);
 }
 return m3;
 }
+
+mlfw_mat_double * mlfw_add_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix)
+{
+mlfw_mat_double *result_matrix;
+index_t r,c;
+dimension_t left_matrix_rows,left_matrix_columns;
+dimension_t right_matrix_rows,right_matrix_columns;
+dimension_t result_matrix_rows,result_matrix_columns;
+double left_value,right_value,result_value;
+
+if(left_matrix==NULL || right_matrix==NULL) return NULL;
+mlfw_mat_double_get_dimension(left_matrix,&left_matrix_rows,&left_matrix_columns);
+mlfw_mat_double_get_dimension(right_matrix,&right_matrix_rows,&right_matrix_columns);
+
+if(left_matrix_rows!=right_matrix_rows || left_matrix_columns!=right_matrix_columns) return NULL;
+
+if(new_matrix==NULL)
+{
+result_matrix_rows=left_matrix_rows;
+result_matrix_columns=left_matrix_columns;
+result_matrix=mlfw_mat_double_create_new(result_matrix_rows,result_matrix_columns);
+if(result_matrix==NULL) return NULL;
+}
+else
+{
+mlfw_mat_double_get_dimension(new_matrix,&result_matrix_rows,&result_matrix_columns);
+if(result_matrix_rows!=left_matrix_rows || result_matrix_columns!=right_matrix_columns) return NULL;
+result_matrix=new_matrix;
+}
+for(r=0;r<left_matrix_rows;++r)
+{
+for(c=0;c<left_matrix_columns;++c)
+{
+left_value=mlfw_mat_double_get(left_matrix,r,c);
+right_value=mlfw_mat_double_get(right_matrix,r,c);
+result_value=left_value+right_value;
+mlfw_mat_double_set(result_matrix,r,c,result_value);
+}
+}
+return result_matrix;
+}
+mlfw_mat_double * mlfw_subtract_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix)
+{
+mlfw_mat_double *result_matrix;
+index_t r,c;
+dimension_t left_matrix_rows,left_matrix_columns;
+dimension_t right_matrix_rows,right_matrix_columns;
+dimension_t result_matrix_rows,result_matrix_columns;
+double left_value,right_value,result_value;
+
+if(left_matrix==NULL || right_matrix==NULL) return NULL;
+mlfw_mat_double_get_dimension(left_matrix,&left_matrix_rows,&left_matrix_columns);
+mlfw_mat_double_get_dimension(right_matrix,&right_matrix_rows,&right_matrix_columns);
+
+if(left_matrix_rows!=right_matrix_rows || left_matrix_columns!=right_matrix_columns) return NULL;
+
+if(new_matrix==NULL)
+{
+result_matrix_rows=left_matrix_rows;
+result_matrix_columns=left_matrix_columns;
+result_matrix=mlfw_mat_double_create_new(result_matrix_rows,result_matrix_columns);
+if(result_matrix==NULL) return NULL;
+}
+else
+{
+mlfw_mat_double_get_dimension(new_matrix,&result_matrix_rows,&result_matrix_columns);
+if(result_matrix_rows!=left_matrix_rows || result_matrix_columns!=right_matrix_columns) return NULL;
+result_matrix=new_matrix;
+}
+for(r=0;r<left_matrix_rows;++r)
+{
+for(c=0;c<left_matrix_columns;++c)
+{
+left_value=mlfw_mat_double_get(left_matrix,r,c);
+right_value=mlfw_mat_double_get(right_matrix,r,c);
+result_value=left_value-right_value;
+mlfw_mat_double_set(result_matrix,r,c,result_value);
+}
+}
+return result_matrix;
+}
