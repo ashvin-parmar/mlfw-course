@@ -4,8 +4,11 @@
 //Matrix X Matrix
 mlfw_mat_double * mlfw_multiply_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix);
 
+mlfw_mat_double * mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix);
+
 mlfw_mat_double * mlfw_add_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix);
 mlfw_mat_double * mlfw_subtract_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix);
+
 
 //Vector X Matrix
 mlfw_column_vec_double * mlfw_multiply_double_matrix_with_column_vector(mlfw_mat_double *left_matrix,mlfw_column_vec_double *right_vector,mlfw_column_vec_double *product_vector);

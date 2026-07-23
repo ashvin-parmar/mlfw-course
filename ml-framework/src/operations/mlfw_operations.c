@@ -252,3 +252,79 @@ mlfw_mat_double_set(result_matrix,r,c,result_value);
 }
 return result_matrix;
 }
+
+mlfw_mat_double * mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix)
+{
+mlfw_mat_double *m1,*m2,*m3;
+dimension_t m1_rows,m1_columns;
+dimension_t m2_rows,m2_columns;
+dimension_t m3_rows,m3_columns;
+
+dimension_t split_matrix_rows;
+dimension_t split_matrix_columns;
+
+mlfw_mat_double *am,*bm,*cm,*dm,*em,*fm,*gm,*hm;
+mlfw_mat_double *e1,*e2,*e3,*e4,*e5,*e6,*e7;
+
+
+double A,B,C,D,E,F,G,H;
+double e1,e2,e3,e4,e5,e6,e7;
+
+if(left_matrix==NULL || right_matrix==NULL) return NULL;
+m1=left_matrix;
+m2=right_matrix;
+
+mlfw_mat_double_get_dimension(m1,&m1_rows,&m1_columns);
+mlfw_mat_double_get_dimension(m2,&m2_rows,&m2_columns);
+if(m1_rows!=2 || m1_columns!=2 || m2_rows!=2 || m2_columns!=2)
+{
+	if(m1_rows!=m1_columns || m2_rows!=m2_columns) return NULL;	//n*n matrix required
+	if(m1_rows!=m2_rows || m1_columns!=m2_columns) return NULL;	//same dimension matrix multiplication required
+	if(m1_rows%2!=0) return NULL;	// rows and columns dimension must multiple of 2 (2,4,8,16,...)
+	split_matrix_rows=m1_rows/2;
+	split_matrix_columns=m2_rows/2;
+	A=mlfw_mat_double_copy
+
+}
+else
+{
+if(new_matrix==NULL)
+{
+m3_rows=m1_rows;
+m3_columns=m2_columns;
+m3=mlfw_mat_double_create_new(m3_rows,m3_columns);
+if(m3==NULL) return NULL;
+}
+else
+{
+mlfw_mat_double_get_dimension(new_matrix,&m3_rows,&m3_columns);
+if(m1_rows!=m3_rows || m2_columns!=m3_columns) return NULL;
+m3=new_matrix;
+}
+
+A=mlfw_mat_double_get(m1,0,0);
+B=mlfw_mat_double_get(m1,0,1);
+C=mlfw_mat_double_get(m1,1,0);
+D=mlfw_mat_double_get(m1,1,1);
+
+E=mlfw_mat_double_get(m2,0,0);
+F=mlfw_mat_double_get(m2,0,1);
+G=mlfw_mat_double_get(m2,1,0);
+H=mlfw_mat_double_get(m2,1,1);
+
+e1=A*(F-H);
+e2=(A+B)*H;
+e3=(C+D)*E;
+e4=D*(G-E);
+e5=(A+D)*(E+H);
+e6=(B-D)*(G+H);
+e7=(A-C)*(E+F);
+
+mlfw_mat_double_set(m3,0,0,e5+e4-e2+e6);
+mlfw_mat_double_set(m3,0,1,e1+e2);
+mlfw_mat_double_set(m3,1,0,e3+e4);
+mlfw_mat_double_set(m3,1,1,e1+e5-e3-e7);
+}
+return m3;
+}
+
