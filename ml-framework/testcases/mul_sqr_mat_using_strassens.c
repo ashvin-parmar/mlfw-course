@@ -51,7 +51,7 @@ int main(int argc,char *argv[])
 	{
 		mlfw_mat_double_destroy(m1);
 	    mlfw_mat_double_destroy(m2);
-		printf("Unable to multiply matrix, provide 2*2 matrix.\n");
+		printf("Unable to multiply matrix, provide (2n*2n) matrix.\n");
 		return 0;
 	}
 	printf("Multiplied matrix: \n");
