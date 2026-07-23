@@ -253,6 +253,50 @@ mlfw_mat_double_set(target,target_r,target_c,mlfw_mat_double_get(source,source_r
 }
 }
 }
+mlfw_mat_double * mlfw_mat_double_create_copy(mlfw_mat_double *source,index_t from_source_row_index,index_t from_source_column_index,index_t to_source_row_index,index_t to_source_column_index,mlfw_mat_double *new_matrix)
+{
+	mlfw_mat_double *target_matrix;
+	dimension_t source_matrix_rows,source_matrix_columns;
+	dimension_t target_matrix_rows,target_matrix_columns;
+	index_t source_r,source_c;
+	index_t target_r,target_c;
+	
+	double value;
+	if(source==NULL) return NULL;
+	mlfw_mat_double_get_dimension(source,&source_matrix_rows,&source_matrix_columns);
+	if(from_source_row_index<0 || from_source_row_index>=source_matrix_rows) return NULL;
+	if(to_source_row_index<0 || to_source_row_index>=source_matrix_rows) return NULL;
+	if(from_source_column_index<0 || from_source_column_index>=source_matrix_rows) return NULL;
+	if(to_source_column_index<0 || to_source_column_index>=source_matrix_columns) return NULL;
+	if(from_source_row_index>to_source_row_index) return NULL;
+	if(from_source_column_index>to_source_column_index) return NULL;
+	if(new_matrix==NULL)
+	{
+		target_matrix_rows=to_source_row_index-from_source_row_index+1;
+		target_matrix_columns=to_source_column_index-from_source_column_index+1;
+		target_matrix=mlfw_mat_double_create_new(target_matrix_rows,target_matrix_columns);
+		if(target_matrix==NULL) return NULL;
+	}
+	else
+	{
+		mlfw_mat_double_get_dimension(new_matrix,&target_matrix_rows,&target_matrix_columns);
+		if(target_matrix_rows!=(to_source_row_index-from_source_row_index+1) || target_matrix_columns!=(to_source_column_index-from_source_column_index+1)) return NULL;  
+		target_matrix=new_matrix;
+	}
+	target_r=0;
+	for(source_r=from_source_row_index;source_r<=to_source_row_index;++source_r)
+	{
+		target_c=0;
+		for(source_c=from_source_column_index;source_c<=to_source_column_index;++source_c)
+		{
+			value=mlfw_mat_double_get(source,source_r,source_c);
+			mlfw_mat_double_set(target_matrix,target_r,target_c,value);
+			target_c++;
+		}
+		target_r++;
+	}
+	return target_matrix;
+}
 mlfw_column_vec_double * mlfw_mat_double_create_column_vec(mlfw_mat_double *matrix,index_t column_index,mlfw_column_vec_double *vector)
 {
 dimension_t matrix_columns;
