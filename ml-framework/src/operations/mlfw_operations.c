@@ -3,6 +3,7 @@
 #include<mlfw_matrix.h>
 #include<mlfw_vector.h>
 #include<mlfw_operations.h>
+#include<math.h>
 
 //Vector X Matrix
 mlfw_column_vec_double * mlfw_multiply_double_matrix_with_column_vector(mlfw_mat_double *left_matrix,mlfw_column_vec_double *right_vector,mlfw_column_vec_double *vector)
@@ -253,121 +254,35 @@ mlfw_mat_double_set(result_matrix,r,c,result_value);
 return result_matrix;
 }
 
-mlfw_mat_double * mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix)
+mlfw_mat_double * _mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_mat_double *m1,mlfw_mat_double *m2,mlfw_mat_double *new_matrix)
 {
-mlfw_mat_double *m1,*m2,*m3;
-dimension_t m1_rows,m1_columns;
-dimension_t m2_rows,m2_columns;
-dimension_t m3_rows,m3_columns;
-
-dimension_t split_matrix_rows;
-dimension_t split_matrix_columns;
+mlfw_mat_double *product=NULL;
+dimension_t rows,columns;
+dimension_t n,half;
 
 mlfw_mat_double *am,*bm,*cm,*dm,*em,*fm,*gm,*hm;
 mlfw_mat_double *em1,*em2,*em3,*em4,*em5,*em6,*em7;
-mlfw_mat_double *value1,*value2,*value3,*value4;
+mlfw_mat_double *cell_0_0,*cell_0_1,*cell_1_0,*cell_1_1;
 mlfw_mat_double *tmp1,*tmp2;
 
 double A,B,C,D,E,F,G,H;
 double e1,e2,e3,e4,e5,e6,e7;
+double value_0_0,value_0_1,value_1_0,value_1_1;
 
-if(left_matrix==NULL || right_matrix==NULL) return NULL;
-m1=left_matrix;
-m2=right_matrix;
-
-mlfw_mat_double_get_dimension(m1,&m1_rows,&m1_columns);
-mlfw_mat_double_get_dimension(m2,&m2_rows,&m2_columns);
-if(m1_rows!=2 || m1_columns!=2 || m2_rows!=2 || m2_columns!=2) 
-{
-	if(m1_rows!=m1_columns || m2_rows!=m2_columns) return NULL;	//n*n matrix required
-	if(m1_rows!=m2_rows || m1_columns!=m2_columns) return NULL;	//same dimension matrix multiplication required
-	if(m1_rows%2!=0) return NULL;	// rows and columns dimension must multiple of 2 (2,4,8,16,...)
-	if(new_matrix==NULL)
-	{
-		m3_rows=m1_rows;
-		m3_columns=m2_columns;
-		m3=mlfw_mat_double_create_new(m3_rows,m3_columns);
-		if(m3==NULL) return NULL;
-	}
-	else
-	{
-		mlfw_mat_double_get_dimension(new_matrix,&m3_rows,&m3_columns);
-		if(m1_rows!=m3_rows || m2_columns!=m3_columns) return NULL;
-		m3=new_matrix;
-	}
-	split_matrix_rows=m1_rows/2;
-	split_matrix_columns=m2_rows/2;
-
-	am=mlfw_mat_double_create_copy(m1,0,0,split_matrix_rows-1,split_matrix_columns-1,NULL);
-	bm=mlfw_mat_double_create_copy(m1,0,split_matrix_columns,split_matrix_rows-1,m1_columns-1,NULL);
-	cm=mlfw_mat_double_create_copy(m1,split_matrix_rows,0,m1_rows-1,split_matrix_columns-1,NULL);
-	dm=mlfw_mat_double_create_copy(m1,split_matrix_rows,split_matrix_columns,m1_rows-1,m1_columns-1,NULL);
-
-	em=mlfw_mat_double_create_copy(m2,0,0,split_matrix_rows-1,split_matrix_columns-1,NULL);
-	fm=mlfw_mat_double_create_copy(m2,0,split_matrix_columns,split_matrix_rows-1,m2_columns-1,NULL);
-	gm=mlfw_mat_double_create_copy(m2,split_matrix_rows,0,m2_rows-1,split_matrix_columns-1,NULL);
-	hm=mlfw_mat_double_create_copy(m2,split_matrix_rows,split_matrix_columns,m2_rows-1,m2_columns-1,NULL);
-
-	tmp1=mlfw_mat_double_create_new(split_matrix_rows,split_matrix_columns);
-	tmp2=mlfw_mat_double_create_new(split_matrix_rows,split_matrix_columns);
-
-	em1=mlfw_strassens_multiply_double_matrix_with_matrix(am,mlfw_subtract_double_matrix_with_matrix(fm,hm,tmp1),NULL);
-	em2=mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(am,bm,tmp1),hm,NULL);
-	em3=mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(cm,dm,tmp1),em,NULL);
-	em4=mlfw_strassens_multiply_double_matrix_with_matrix(dm,mlfw_subtract_double_matrix_with_matrix(gm,em,tmp1),NULL);
-	em5=mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(am,dm,tmp1),mlfw_add_double_matrix_with_matrix(em,hm,tmp2),NULL);
-	em6=mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(bm,dm,tmp1),mlfw_add_double_matrix_with_matrix(gm,hm,tmp2),NULL);
-	em7=mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(am,cm,tmp1),mlfw_add_double_matrix_with_matrix(em,fm,tmp2),NULL);
-	mlfw_mat_double_destroy(am);
-	mlfw_mat_double_destroy(bm);
-	mlfw_mat_double_destroy(cm);
-	mlfw_mat_double_destroy(dm);
-	mlfw_mat_double_destroy(em);
-	mlfw_mat_double_destroy(fm);
-	mlfw_mat_double_destroy(gm);
-	mlfw_mat_double_destroy(hm);
-
-	value1=mlfw_add_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(em5,em4,tmp1),mlfw_subtract_double_matrix_with_matrix(em6,em2,tmp2),NULL);
-	value2=mlfw_add_double_matrix_with_matrix(em1,em2,NULL);
-	value3=mlfw_add_double_matrix_with_matrix(em3,em4,NULL);
-	value4=mlfw_add_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(em1,em3,tmp1),mlfw_subtract_double_matrix_with_matrix(em5,em7,tmp2),NULL);
-
-	mlfw_mat_double_destroy(tmp1);
-	mlfw_mat_double_destroy(tmp2);
-
-	mlfw_mat_double_destroy(em1);
-	mlfw_mat_double_destroy(em2);
-	mlfw_mat_double_destroy(em3);
-	mlfw_mat_double_destroy(em4);
-	mlfw_mat_double_destroy(em5);
-	mlfw_mat_double_destroy(em6);
-	mlfw_mat_double_destroy(em7);
-
-	mlfw_mat_double_copy(m3,value1,0,0,0,0,split_matrix_rows-1,split_matrix_columns-1);
-	mlfw_mat_double_copy(m3,value2,0,split_matrix_columns,0,0,split_matrix_rows-1,split_matrix_columns-1);
-	mlfw_mat_double_copy(m3,value3,split_matrix_rows,0,0,0,split_matrix_rows-1,split_matrix_columns-1);
-	mlfw_mat_double_copy(m3,value4,split_matrix_rows,split_matrix_columns,0,0,split_matrix_rows-1,split_matrix_columns-1);
-	
-	mlfw_mat_double_destroy(value1);
-	mlfw_mat_double_destroy(value2);
-	mlfw_mat_double_destroy(value3);
-	mlfw_mat_double_destroy(value4);
-}
-else
-{
+mlfw_mat_double_get_dimension(m1,&rows,&columns);
+n=rows;
 if(new_matrix==NULL)
 {
-m3_rows=m1_rows;
-m3_columns=m2_columns;
-m3=mlfw_mat_double_create_new(m3_rows,m3_columns);
-if(m3==NULL) return NULL;
+product=mlfw_mat_double_create_new(n,n);
+if(product==NULL) return NULL;
 }
 else
 {
-mlfw_mat_double_get_dimension(new_matrix,&m3_rows,&m3_columns);
-if(m1_rows!=m3_rows || m2_columns!=m3_columns) return NULL;
-m3=new_matrix;
+product=new_matrix;
 }
+
+if(n==2)	//stressens algorithm on double values
+{
 
 A=mlfw_mat_double_get(m1,0,0);
 B=mlfw_mat_double_get(m1,0,1);
@@ -387,11 +302,97 @@ e5=(A+D)*(E+H);
 e6=(B-D)*(G+H);
 e7=(A-C)*(E+F);
 
-mlfw_mat_double_set(m3,0,0,e5+e4-e2+e6);
-mlfw_mat_double_set(m3,0,1,e1+e2);
-mlfw_mat_double_set(m3,1,0,e3+e4);
-mlfw_mat_double_set(m3,1,1,e1+e5-e3-e7);
-}
-return m3;
-}
+value_0_0=e5+e4-e2+e6;
+value_0_1=e1+e2;
+value_1_0=e3+e4;
+value_1_1=e1+e5-e3-e7;
 
+mlfw_mat_double_set(product,0,0,value_0_0);
+mlfw_mat_double_set(product,0,1,value_0_1);
+mlfw_mat_double_set(product,1,0,value_1_0);
+mlfw_mat_double_set(product,1,1,value_1_1);
+}
+else		//strassens algorithm on double matrix
+{
+	half=n/2;
+
+	am=mlfw_mat_double_create_copy(m1,0,0,half-1,half-1,NULL);
+	bm=mlfw_mat_double_create_copy(m1,0,half,half-1,n-1,NULL);
+	cm=mlfw_mat_double_create_copy(m1,half,0,n-1,half-1,NULL);
+	dm=mlfw_mat_double_create_copy(m1,half,half,n-1,n-1,NULL);
+
+	em=mlfw_mat_double_create_copy(m2,0,0,half-1,half-1,NULL);
+	fm=mlfw_mat_double_create_copy(m2,0,half,half-1,n-1,NULL);
+	gm=mlfw_mat_double_create_copy(m2,half,0,n-1,half-1,NULL);
+	hm=mlfw_mat_double_create_copy(m2,half,half,n-1,n-1,NULL);
+
+	tmp1=mlfw_mat_double_create_new(half,half);
+	tmp2=mlfw_mat_double_create_new(half,half);
+
+	em1=_mlfw_strassens_multiply_double_matrix_with_matrix(am,mlfw_subtract_double_matrix_with_matrix(fm,hm,tmp1),NULL);
+	em2=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(am,bm,tmp1),hm,NULL);
+	em3=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(cm,dm,tmp1),em,NULL);
+	em4=_mlfw_strassens_multiply_double_matrix_with_matrix(dm,mlfw_subtract_double_matrix_with_matrix(gm,em,tmp1),NULL);
+	em5=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(am,dm,tmp1),mlfw_add_double_matrix_with_matrix(em,hm,tmp2),NULL);
+	em6=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(bm,dm,tmp1),mlfw_add_double_matrix_with_matrix(gm,hm,tmp2),NULL);
+	em7=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(am,cm,tmp1),mlfw_add_double_matrix_with_matrix(em,fm,tmp2),NULL);
+	mlfw_mat_double_destroy(am);
+	mlfw_mat_double_destroy(bm);
+	mlfw_mat_double_destroy(cm);
+	mlfw_mat_double_destroy(dm);
+	mlfw_mat_double_destroy(em);
+	mlfw_mat_double_destroy(fm);
+	mlfw_mat_double_destroy(gm);
+	mlfw_mat_double_destroy(hm);
+
+	cell_0_0=mlfw_add_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(em5,em4,tmp1),mlfw_subtract_double_matrix_with_matrix(em6,em2,tmp2),NULL);
+	cell_0_1=mlfw_add_double_matrix_with_matrix(em1,em2,NULL);
+	cell_1_0=mlfw_add_double_matrix_with_matrix(em3,em4,NULL);
+	cell_1_1=mlfw_add_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(em1,em3,tmp1),mlfw_subtract_double_matrix_with_matrix(em5,em7,tmp2),NULL);
+
+	mlfw_mat_double_destroy(tmp1);
+	mlfw_mat_double_destroy(tmp2);
+
+	mlfw_mat_double_destroy(em1);
+	mlfw_mat_double_destroy(em2);
+	mlfw_mat_double_destroy(em3);
+	mlfw_mat_double_destroy(em4);
+	mlfw_mat_double_destroy(em5);
+	mlfw_mat_double_destroy(em6);
+	mlfw_mat_double_destroy(em7);
+
+	mlfw_mat_double_copy(product,cell_0_0,0,0,0,0,half-1,half-1);
+	mlfw_mat_double_copy(product,cell_0_1,0,half,0,0,half-1,half-1);
+	mlfw_mat_double_copy(product,cell_1_0,half,0,0,0,half-1,half-1);
+	mlfw_mat_double_copy(product,cell_1_1,half,half,0,0,half-1,half-1);
+	
+	mlfw_mat_double_destroy(cell_0_0);
+	mlfw_mat_double_destroy(cell_0_1);
+	mlfw_mat_double_destroy(cell_1_0);
+	mlfw_mat_double_destroy(cell_1_1);
+}
+return product;
+}
+mlfw_mat_double *mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_mat_double *left_matrix,mlfw_mat_double *right_matrix,mlfw_mat_double *new_matrix)
+{
+mlfw_mat_double *m1,*m2,*m3;
+dimension_t m1_rows,m1_columns;
+dimension_t m2_rows,m2_columns;
+dimension_t m3_rows,m3_columns;
+	if(left_matrix==NULL || right_matrix==NULL) return NULL;
+	m1=left_matrix;
+	m2=right_matrix;
+
+	mlfw_mat_double_get_dimension(m1,&m1_rows,&m1_columns);
+	mlfw_mat_double_get_dimension(m2,&m2_rows,&m2_columns);
+	if(m1_rows!=m1_columns || m2_rows!=m2_columns) return NULL;	//n*n matrix required
+	if(m1_rows!=m2_rows || m1_columns!=m2_columns) return NULL;	//same dimension matrix multiplication required
+	if((m1_rows & (m1_rows-1))!=0) return NULL;	// rows and columns dimension must multiple of 2 (2,4,8,16,...)
+	if(new_matrix!=NULL)
+	{
+		mlfw_mat_double_get_dimension(new_matrix,&m3_rows,&m3_columns);
+		if(m1_rows!=m3_rows || m2_columns!=m3_columns) return NULL;
+	}
+	m3=_mlfw_strassens_multiply_double_matrix_with_matrix(m1,m2,new_matrix);
+	return m3;
+}
