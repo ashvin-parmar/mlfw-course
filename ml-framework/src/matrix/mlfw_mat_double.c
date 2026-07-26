@@ -950,14 +950,52 @@ identity_matrix->data[i][c]=identity_matrix->data[i][c]-value*identity_matrix->d
 }
 }
 
-// loop to eliminate all values above rth row in pivot_column_index column
-//Note: That identity matrix should also be updated.
-
-//loop to eliminate all values below rth row in pivot_column_index column
-//Note: identity matrix should also be updated.
 }
 
 mlfw_mat_double_destroy(matrix);
 return identity_matrix;		//identity matrix is now inverse ot matrix_to_inverse
 }
+mlfw_mat_double * mlfw_mat_double_create_new_random_filled(dimension_t rows,dimension_t columns,double min,double max,mlfw_mat_double *new_matrix)
+{
+mlfw_mat_double *matrix;
+index_t r,c;
+double value;
+dimension_t new_matrix_rows,new_matrix_columns;
 
+if(rows<=0 || columns<=0 || min>max) return NULL;
+if(new_matrix==NULL)
+{
+matrix=mlfw_mat_double_create_new(rows,columns);
+if(matrix==NULL) return NULL;
+}
+else
+{
+mlfw_mat_double_get_dimension(new_matrix,&new_matrix_rows,&new_matrix_columns);
+if(new_matrix_rows!=rows || new_matrix_columns!=columns) return NULL;
+matrix=new_matrix;
+}
+if(min==max)
+{
+for(r=0;r<rows;r++)
+{
+for(c=0;c<columns;c++)
+{
+matrix->data[r][c]=min;
+}
+}
+}
+else
+{
+srand(time(NULL));
+for(r=0;r<rows;r++)
+{
+for(c=0;c<columns;c++)
+{
+value=rand();
+value=((value*(max-min))/RAND_MAX)+min;
+matrix->data[r][c]=value;
+}
+}
+}
+return matrix;
+}
