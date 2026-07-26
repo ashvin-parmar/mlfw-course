@@ -203,6 +203,7 @@ index++;
 }
 //Read first line ends here
 index=0;
+size=0;
 while(1)
 {
 m=fgetc(file);
@@ -457,6 +458,7 @@ header_string[index]=m;
 index++;
 }
 //Read first line ends here
+size=0;
 while(1)
 {
 m=fgetc(file);
