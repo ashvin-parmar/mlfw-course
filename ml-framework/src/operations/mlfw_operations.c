@@ -317,25 +317,246 @@ else		//strassens algorithm on double matrix
 	half=n/2;
 
 	am=mlfw_mat_double_create_copy(m1,0,0,half-1,half-1,NULL);
+	if(am==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		return NULL;
+	}
 	bm=mlfw_mat_double_create_copy(m1,0,half,half-1,n-1,NULL);
+	if(bm==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		return NULL;
+	}
 	cm=mlfw_mat_double_create_copy(m1,half,0,n-1,half-1,NULL);
+	if(cm==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		return NULL;
+	}
 	dm=mlfw_mat_double_create_copy(m1,half,half,n-1,n-1,NULL);
+	if(dm==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		return NULL;
+	}
 
 	em=mlfw_mat_double_create_copy(m2,0,0,half-1,half-1,NULL);
+	if(em==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		return NULL;
+	}
 	fm=mlfw_mat_double_create_copy(m2,0,half,half-1,n-1,NULL);
+	if(fm==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		return NULL;
+	}
 	gm=mlfw_mat_double_create_copy(m2,half,0,n-1,half-1,NULL);
+	if(gm==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		return NULL;
+	}
 	hm=mlfw_mat_double_create_copy(m2,half,half,n-1,n-1,NULL);
+	if(hm==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		return NULL;
+	}
 
 	tmp1=mlfw_mat_double_create_new(half,half);
+	if(tmp1==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		return NULL;
+	}
 	tmp2=mlfw_mat_double_create_new(half,half);
+	if(tmp2==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		mlfw_mat_double_destroy(tmp1);
+		return NULL;
+	}
 
 	em1=_mlfw_strassens_multiply_double_matrix_with_matrix(am,mlfw_subtract_double_matrix_with_matrix(fm,hm,tmp1),NULL);
+	if(em1==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		return NULL;
+	}
 	em2=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(am,bm,tmp1),hm,NULL);
+	if(em2==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		return NULL;
+	}
 	em3=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(cm,dm,tmp1),em,NULL);
+	if(em3==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		return NULL;
+	}
 	em4=_mlfw_strassens_multiply_double_matrix_with_matrix(dm,mlfw_subtract_double_matrix_with_matrix(gm,em,tmp1),NULL);
+	if(em4==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		mlfw_mat_double_destroy(em3);
+		return NULL;
+	}
 	em5=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(am,dm,tmp1),mlfw_add_double_matrix_with_matrix(em,hm,tmp2),NULL);
+	if(em5==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		mlfw_mat_double_destroy(em3);
+		mlfw_mat_double_destroy(em4);
+		return NULL;
+	}
 	em6=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(bm,dm,tmp1),mlfw_add_double_matrix_with_matrix(gm,hm,tmp2),NULL);
+	if(em6==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		mlfw_mat_double_destroy(em3);
+		mlfw_mat_double_destroy(em4);
+		mlfw_mat_double_destroy(em5);
+		return NULL;
+	}
 	em7=_mlfw_strassens_multiply_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(am,cm,tmp1),mlfw_add_double_matrix_with_matrix(em,fm,tmp2),NULL);
+	if(em7==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(am);
+		mlfw_mat_double_destroy(bm);
+		mlfw_mat_double_destroy(cm);
+		mlfw_mat_double_destroy(dm);
+		mlfw_mat_double_destroy(em);
+		mlfw_mat_double_destroy(fm);
+		mlfw_mat_double_destroy(gm);
+		mlfw_mat_double_destroy(hm);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		mlfw_mat_double_destroy(em3);
+		mlfw_mat_double_destroy(em4);
+		mlfw_mat_double_destroy(em5);
+		mlfw_mat_double_destroy(em6);
+		return NULL;
+	}
 	mlfw_mat_double_destroy(am);
 	mlfw_mat_double_destroy(bm);
 	mlfw_mat_double_destroy(cm);
@@ -346,9 +567,71 @@ else		//strassens algorithm on double matrix
 	mlfw_mat_double_destroy(hm);
 
 	cell_0_0=mlfw_add_double_matrix_with_matrix(mlfw_add_double_matrix_with_matrix(em5,em4,tmp1),mlfw_subtract_double_matrix_with_matrix(em6,em2,tmp2),NULL);
+	if(cell_0_0==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		mlfw_mat_double_destroy(em3);
+		mlfw_mat_double_destroy(em4);
+		mlfw_mat_double_destroy(em5);
+		mlfw_mat_double_destroy(em6);
+		mlfw_mat_double_destroy(em7);
+		return NULL;
+	}
 	cell_0_1=mlfw_add_double_matrix_with_matrix(em1,em2,NULL);
+	if(cell_0_1==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		mlfw_mat_double_destroy(em3);
+		mlfw_mat_double_destroy(em4);
+		mlfw_mat_double_destroy(em5);
+		mlfw_mat_double_destroy(em6);
+		mlfw_mat_double_destroy(em7);
+		mlfw_mat_double_destroy(cell_0_0);
+		return NULL;
+	}
 	cell_1_0=mlfw_add_double_matrix_with_matrix(em3,em4,NULL);
+	if(cell_1_0==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		mlfw_mat_double_destroy(em3);
+		mlfw_mat_double_destroy(em4);
+		mlfw_mat_double_destroy(em5);
+		mlfw_mat_double_destroy(em6);
+		mlfw_mat_double_destroy(em7);
+		mlfw_mat_double_destroy(cell_0_0);
+		mlfw_mat_double_destroy(cell_0_1);
+		return NULL;
+	}
 	cell_1_1=mlfw_add_double_matrix_with_matrix(mlfw_subtract_double_matrix_with_matrix(em1,em3,tmp1),mlfw_subtract_double_matrix_with_matrix(em5,em7,tmp2),NULL);
+	if(cell_1_1==NULL)
+	{
+		if(new_matrix==NULL) mlfw_mat_double_destroy(product);
+		mlfw_mat_double_destroy(tmp1);
+		mlfw_mat_double_destroy(tmp2);
+		mlfw_mat_double_destroy(em1);
+		mlfw_mat_double_destroy(em2);
+		mlfw_mat_double_destroy(em3);
+		mlfw_mat_double_destroy(em4);
+		mlfw_mat_double_destroy(em5);
+		mlfw_mat_double_destroy(em6);
+		mlfw_mat_double_destroy(em7);
+		mlfw_mat_double_destroy(cell_0_0);
+		mlfw_mat_double_destroy(cell_0_1);
+		mlfw_mat_double_destroy(cell_1_0);
+		return NULL;
+	}
 
 	mlfw_mat_double_destroy(tmp1);
 	mlfw_mat_double_destroy(tmp2);
