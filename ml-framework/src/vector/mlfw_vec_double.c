@@ -98,7 +98,7 @@ sum+=(vector->data[i]);
 mean=sum/vector->size;
 return mean;
 }
-void mlfw_column_vec_double_to_csv(mlfw_column_vec_double *vector,char *csv_filename,mlfw_row_vec_string *header)
+void mlfw_column_vec_double_to_csv(mlfw_column_vec_double *vector,const char *csv_filename,mlfw_row_vec_string *header)
 {
 dimension_t header_size;
 index_t index;
@@ -131,7 +131,7 @@ else fputc(',',file);
 }
 fclose(file);
 }
-mlfw_column_vec_double * mlfw_column_vec_double_from_csv(char *csv_filename,mlfw_column_vec_double *vector,mlfw_row_vec_string **header)
+mlfw_column_vec_double * mlfw_column_vec_double_from_csv(const char *csv_filename,mlfw_column_vec_double *vector,mlfw_row_vec_string **header)
 {
 char header_string[1025];
 index_t header_index;
@@ -362,7 +362,7 @@ double mean,sum;
 for(i=0,sum=0.0;i<vector->size;i++,sum+=(vector->data[i]));
 return mean=sum/vector->size; 
 }
-void mlfw_row_vec_double_to_csv(mlfw_row_vec_double *vector,char *csv_filename,mlfw_row_vec_string *header)
+void mlfw_row_vec_double_to_csv(mlfw_row_vec_double *vector,const char *csv_filename,mlfw_row_vec_string *header)
 {
 index_t index;
 dimension_t header_size;
@@ -395,7 +395,7 @@ else fputc(',',file);
 }
 fclose(file);
 }
-mlfw_row_vec_double * mlfw_row_vec_double_from_csv(char *csv_filename,mlfw_row_vec_double *vector,mlfw_row_vec_string **header)
+mlfw_row_vec_double * mlfw_row_vec_double_from_csv(const char *csv_filename,mlfw_row_vec_double *vector,mlfw_row_vec_string **header)
 {
 char header_string[1025];
 index_t header_index;
