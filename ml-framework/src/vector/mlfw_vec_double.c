@@ -258,7 +258,7 @@ i++;
 fclose(file);
 return vector;
 }
-void mlfw_column_vec_double_copy(mlfw_column_vec_double *source,mlfw_column_vec_double *target,index_t source_start_index,index_t source_end_index,index_t target_start_index)
+void mlfw_column_vec_double_copy(mlfw_column_vec_double *target,mlfw_column_vec_double *source,index_t target_start_index,index_t source_start_index,index_t source_end_index)
 {
 dimension_t source_size;
 dimension_t target_size;
@@ -522,4 +522,29 @@ i++;
 }
 fclose(file);
 return vector;
+}
+void mlfw_row_vec_double_copy(mlfw_row_vec_double *target,mlfw_row_vec_double *source,index_t target_start_index,index_t source_start_index,index_t source_end_index)
+{
+dimension_t source_size;
+dimension_t target_size;
+index_t source_i,target_i;
+double value;
+if(source==NULL || target==NULL) return ;
+source_size=mlfw_row_vec_double_get_size(source);
+target_size=mlfw_row_vec_double_get_size(target);
+
+if(source_start_index<0 || source_start_index>=source_size) return ;
+if(source_end_index<0 || source_end_index>=source_size) return ;
+if(source_start_index>source_end_index) return ;
+
+if(target_start_index<0 || target_start_index>=target_size) return ;
+if(target_start_index+(source_end_index-source_start_index)>=target_size) return ;
+
+target_i=target_start_index;
+for(source_i=source_start_index;source_i<=source_end_index;source_i++)
+{
+	value=mlfw_row_vec_double_get(source,source_i);
+	mlfw_row_vec_double_set(target,target_i,value);
+	target_i++;
+}
 }

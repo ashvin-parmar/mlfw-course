@@ -33,9 +33,10 @@ int main() {
 		printf("unable to create copy vector\n");
 		return 0;
 	}
-	mlfw_column_vec_double_copy(row_vector,copy_vector,2,4,1);
-//	mlfw_column_vec_double_copy(row_vector,copy_vector,6,2,1);
-//	mlfw_column_vec_double_copy(row_vector,copy_vector,2,6,1);
+	//copy_vector=>target and row_vector=>source
+	mlfw_column_vec_double_copy(copy_vector,row_vector,1,2,4);
+//	mlfw_column_vec_double_copy(copy_vector,row_vector,1,6,2);
+//	mlfw_column_vec_double_copy(copy_vector,row_vector,1,2,6);
 	print_column_vector(copy_vector);
 
 	mlfw_column_vec_double_destroy(row_vector);
