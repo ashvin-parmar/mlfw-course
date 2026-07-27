@@ -1,0 +1,12 @@
+#pragma once
+
+#include<cstdint>
+
+typedef uint32_t dimension_t;
+typedef uint32_t index_t;
+
+extern "C" {
+#include<mlfw_vector.h>
+}
+#include<vector/rvec>
+

@@ -1,0 +1,27 @@
+#pragma once
+
+#include<iostream>
+#include<cstdint>
+
+using namespace std;
+
+typedef uint32_t dimension_t;
+typedef uint32_t index_t;
+
+namespace mlfw
+{
+class Vector //abstract class
+{
+public: 
+static const int CSV;
+virtual double get(index_t index)=0;
+virtual void set(index_t index,double value)=0;
+
+virtual dimension_t size()=0;
+
+virtual Vector* transpose()=0;
+virtual Vector* fill(double value)=0;
+virtual double mean()=0;
+
+};
+}

@@ -1,0 +1,43 @@
+#pragma once
+
+#include<iostream>
+#include<vector>
+#include<vector/vector>
+extern "C" 
+{
+#include<mlfw_vector.h>
+}
+
+using namespace std;
+namespace mlfw
+{
+class RVec: public Vector
+{
+private: 
+mlfw_row_vec_double *vec;
+dimension_t _size;
+RVec();
+public:
+RVec(dimension_t size) noexcept(false);
+RVec(dimension_t size,double value) noexcept(false);
+RVec(const RVec &other) noexcept(false);
+virtual ~RVec() noexcept(false);
+
+double get(dimension_t index) noexcept(false);
+void set(dimension_t index,double value) noexcept(false);
+
+static RVec* from(string file_name,int file_format,std::vector<string> &header);
+static void to(RVec *row_vector,string file_name,int file_format,std::vector<string> &header);
+void to(string file_name,int file_format,std::vector<string> &header);
+
+dimension_t size();
+Vector* transpose();
+Vector* fill(double value);
+double mean();
+
+RVec& operator=(const RVec &other);
+
+void fill(index_t from_row_index,index_t from_column_index,index_t to_row_index,index_t to_column_index,double value);
+static void copy(RVec *target,RVec *source,index_t target_start_index,index_t source_start_index,index_t source_end_index) noexcept(false);
+};
+}
