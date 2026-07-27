@@ -148,7 +148,7 @@ mlfw_mat_double_to_csv(this->matrix,file_name.c_str(),row_header);
 }
 else
 {
-throw MLFWException("Invalid file format, Must from [CSV]");
+throw MLFWException("Invalid file format, Pick from [CSV]");
 }
 }
 dimension_t Mat::rows()

@@ -27,9 +27,9 @@ virtual ~Mat() noexcept(false);
 double get(dimension_t row,dimension_t column) noexcept(false);
 void set(dimension_t row,dimension_t column,double value) noexcept(false);
 
-static Mat* from(string csv_file_name,int file_format,vector<string> &header);
-static void to(Mat *matrix,string csv_file_name,int file_format,vector<string> &header);
-void to(string csv_file_name,int file_format,vector<string> &header);
+static Mat* from(string file_name,int file_format,vector<string> &header);
+static void to(Mat *matrix,string file_name,int file_format,vector<string> &header);
+void to(string file_name,int file_format,vector<string> &header);
 
 
 dimension_t rows();
