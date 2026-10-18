@@ -19,5 +19,12 @@ mlfw_column_vec_double * mlfw_subtract_double_column_vector(mlfw_column_vec_doub
 mlfw_column_vec_double * mlfw_multiply_double_row_vector_with_column_vector(mlfw_row_vec_double *left_vector,mlfw_column_vec_double *right_vector,mlfw_column_vec_double *product_vector);
 mlfw_column_vec_double * mlfw_multiply_double_scalar_with_column_vector(double scalar,mlfw_column_vec_double *vector,mlfw_column_vec_double *product_vector);
 
+mlfw_column_vec_double * mlfw_subtract_double_column_vec_from_scaler(mlfw_column_vec_double *vector,double scalar_value,mlfw_column_vec_double *new_vector);
+
+mlfw_column_vec_double * mlfw_element_wise_multiply_double_column_vector(mlfw_column_vec_double * v1,mlfw_column_vec_double *v2,mlfw_column_vec_double *new_vector);
+
+mlfw_column_vec_double * mlfw_add_double_column_vector(mlfw_column_vec_double * v1,mlfw_column_vec_double *v2,mlfw_column_vec_double *new_vector);
+
+
 
 #endif
